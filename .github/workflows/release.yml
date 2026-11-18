@@ -1,0 +1,90 @@
+name: Release
+# Automatic triggers are intentionally disabled for the initial repository import.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Windows ${{ matrix.arch }} portable
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-pc-windows-msvc
+            arch: x64
+          - target: i686-pc-windows-msvc
+            arch: x86
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+          key: ${{ matrix.target }}
+
+      - run: npm ci
+      - run: npm test
+
+      - name: Build portable executable
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $target = '${{ matrix.target }}'
+          $arch = '${{ matrix.arch }}'
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          npx tauri build --target $target --no-bundle
+          $exe = "src-tauri/target/$target/release/rino.exe"
+          if (-not (Test-Path $exe)) { throw "missing $exe" }
+          $stage = "release/RINO"
+          New-Item -ItemType Directory -Force $stage | Out-Null
+          Copy-Item $exe "$stage/RINO.exe" -Force
+          Copy-Item "src-tauri/resources" "$stage/resources" -Recurse -Force
+          Copy-Item LICENSE, THIRD_PARTY_NOTICES.md, README.md $stage -Force
+          $loader = "src-tauri/target/$target/release/WebView2Loader.dll"
+          if (Test-Path $loader) { Copy-Item $loader $stage -Force }
+          $zip = "release/RINO_${version}_windows_${arch}_portable.zip"
+          Compress-Archive -Path "$stage/*" -DestinationPath $zip -Force
+          Get-ChildItem release | Select-Object Name, Length
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RINO-windows-${{ matrix.arch }}
+          path: release/*.zip
+          if-no-files-found: error
+
+  publish:
+    name: Publish GitHub Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: RINO ${{ github.ref_name }}
+          files: artifacts/*.zip
+          generate_release_notes: true
+          body: |
+            Windows 便携版，解压后运行 `RINO.exe`。
+
+            - x64：`RINO_*_windows_x64_portable.zip`
+            - x86：`RINO_*_windows_x86_portable.zip`
+
+            Windows 11 自带 WebView2；Windows 10 首次启动若提示缺少 WebView2，请安装 Microsoft Edge WebView2 Runtime。

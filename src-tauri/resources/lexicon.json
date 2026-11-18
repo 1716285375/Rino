@@ -1,0 +1,2655 @@
+{
+  "你好": {
+    "en": [
+      "hello",
+      "hi"
+    ],
+    "ja": [
+      "こんにちは"
+    ],
+    "ko": [
+      "안녕하세요"
+    ],
+    "fr": [
+      "bonjour"
+    ],
+    "de": [
+      "Hallo"
+    ],
+    "es": [
+      "hola"
+    ],
+    "ru": [
+      "привет"
+    ],
+    "it": [
+      "ciao"
+    ],
+    "pt": [
+      "olá"
+    ]
+  },
+  "谢谢": {
+    "en": [
+      "thank you",
+      "thanks"
+    ],
+    "ja": [
+      "ありがとう"
+    ],
+    "ko": [
+      "감사합니다"
+    ],
+    "fr": [
+      "merci"
+    ],
+    "de": [
+      "Danke"
+    ],
+    "es": [
+      "gracias"
+    ],
+    "ru": [
+      "спасибо"
+    ],
+    "it": [
+      "grazie"
+    ],
+    "pt": [
+      "obrigado"
+    ]
+  },
+  "再见": {
+    "en": [
+      "goodbye",
+      "see you"
+    ],
+    "ja": [
+      "さようなら"
+    ],
+    "ko": [
+      "안녕히 가세요"
+    ],
+    "fr": [
+      "au revoir"
+    ],
+    "de": [
+      "Auf Wiedersehen"
+    ],
+    "es": [
+      "adiós"
+    ],
+    "ru": [
+      "до свидания"
+    ],
+    "it": [
+      "arrivederci"
+    ],
+    "pt": [
+      "adeus"
+    ]
+  },
+  "早上好": {
+    "en": [
+      "good morning"
+    ],
+    "ja": [
+      "おはようございます"
+    ],
+    "ko": [
+      "좋은 아침"
+    ],
+    "fr": [
+      "bonjour"
+    ],
+    "de": [
+      "Guten Morgen"
+    ],
+    "es": [
+      "buenos días"
+    ],
+    "ru": [
+      "доброе утро"
+    ],
+    "it": [
+      "buongiorno"
+    ],
+    "pt": [
+      "bom dia"
+    ]
+  },
+  "晚上好": {
+    "en": [
+      "good evening"
+    ],
+    "ja": [
+      "こんばんは"
+    ],
+    "ko": [
+      "좋은 저녁"
+    ],
+    "fr": [
+      "bonsoir"
+    ],
+    "de": [
+      "Guten Abend"
+    ],
+    "es": [
+      "buenas noches"
+    ],
+    "ru": [
+      "добрый вечер"
+    ],
+    "it": [
+      "buonasera"
+    ],
+    "pt": [
+      "boa noite"
+    ]
+  },
+  "晚安": {
+    "en": [
+      "good night"
+    ],
+    "ja": [
+      "おやすみなさい"
+    ],
+    "ko": [
+      "잘 자요"
+    ],
+    "fr": [
+      "bonne nuit"
+    ],
+    "de": [
+      "Gute Nacht"
+    ],
+    "es": [
+      "buenas noches"
+    ],
+    "ru": [
+      "спокойной ночи"
+    ],
+    "it": [
+      "buonanotte"
+    ],
+    "pt": [
+      "boa noite"
+    ]
+  },
+  "对不起": {
+    "en": [
+      "sorry",
+      "I apologize"
+    ],
+    "ja": [
+      "ごめんなさい"
+    ],
+    "ko": [
+      "미안합니다"
+    ],
+    "fr": [
+      "désolé"
+    ],
+    "de": [
+      "Entschuldigung"
+    ],
+    "es": [
+      "lo siento"
+    ],
+    "ru": [
+      "извините"
+    ],
+    "it": [
+      "mi dispiace"
+    ],
+    "pt": [
+      "desculpe"
+    ]
+  },
+  "没关系": {
+    "en": [
+      "it's okay",
+      "no problem"
+    ],
+    "ja": [
+      "大丈夫です"
+    ],
+    "ko": [
+      "괜찮아요"
+    ],
+    "fr": [
+      "ce n'est pas grave"
+    ],
+    "de": [
+      "kein Problem"
+    ],
+    "es": [
+      "no pasa nada"
+    ],
+    "ru": [
+      "ничего страшного"
+    ],
+    "it": [
+      "non fa niente"
+    ],
+    "pt": [
+      "não tem problema"
+    ]
+  },
+  "请": {
+    "en": [
+      "please"
+    ],
+    "ja": [
+      "お願いします"
+    ],
+    "ko": [
+      "부탁합니다"
+    ],
+    "fr": [
+      "s'il vous plaît"
+    ],
+    "de": [
+      "bitte"
+    ],
+    "es": [
+      "por favor"
+    ],
+    "ru": [
+      "пожалуйста"
+    ],
+    "it": [
+      "per favore"
+    ],
+    "pt": [
+      "por favor"
+    ]
+  },
+  "是": {
+    "en": [
+      "yes",
+      "to be"
+    ],
+    "ja": [
+      "はい"
+    ],
+    "ko": [
+      "네"
+    ],
+    "fr": [
+      "oui"
+    ],
+    "de": [
+      "ja"
+    ],
+    "es": [
+      "sí"
+    ],
+    "ru": [
+      "да"
+    ],
+    "it": [
+      "sì"
+    ],
+    "pt": [
+      "sim"
+    ]
+  },
+  "不是": {
+    "en": [
+      "no",
+      "is not"
+    ],
+    "ja": [
+      "いいえ"
+    ],
+    "ko": [
+      "아니요"
+    ],
+    "fr": [
+      "non"
+    ],
+    "de": [
+      "nein"
+    ],
+    "es": [
+      "no"
+    ],
+    "ru": [
+      "нет"
+    ],
+    "it": [
+      "no"
+    ],
+    "pt": [
+      "não"
+    ]
+  },
+  "我": {
+    "en": [
+      "I",
+      "me"
+    ],
+    "ja": [
+      "私"
+    ],
+    "ko": [
+      "나"
+    ],
+    "fr": [
+      "je",
+      "moi"
+    ],
+    "de": [
+      "ich"
+    ],
+    "es": [
+      "yo"
+    ],
+    "ru": [
+      "я"
+    ],
+    "it": [
+      "io"
+    ],
+    "pt": [
+      "eu"
+    ]
+  },
+  "你": {
+    "en": [
+      "you"
+    ],
+    "ja": [
+      "あなた"
+    ],
+    "ko": [
+      "너"
+    ],
+    "fr": [
+      "tu",
+      "vous"
+    ],
+    "de": [
+      "du",
+      "Sie"
+    ],
+    "es": [
+      "tú",
+      "usted"
+    ],
+    "ru": [
+      "ты",
+      "вы"
+    ],
+    "it": [
+      "tu"
+    ],
+    "pt": [
+      "tu",
+      "você"
+    ]
+  },
+  "他": {
+    "en": [
+      "he",
+      "him"
+    ],
+    "ja": [
+      "彼"
+    ],
+    "ko": [
+      "그"
+    ],
+    "fr": [
+      "il"
+    ],
+    "de": [
+      "er"
+    ],
+    "es": [
+      "él"
+    ],
+    "ru": [
+      "он"
+    ],
+    "it": [
+      "lui"
+    ],
+    "pt": [
+      "ele"
+    ]
+  },
+  "她": {
+    "en": [
+      "she",
+      "her"
+    ],
+    "ja": [
+      "彼女"
+    ],
+    "ko": [
+      "그녀"
+    ],
+    "fr": [
+      "elle"
+    ],
+    "de": [
+      "sie"
+    ],
+    "es": [
+      "ella"
+    ],
+    "ru": [
+      "она"
+    ],
+    "it": [
+      "lei"
+    ],
+    "pt": [
+      "ela"
+    ]
+  },
+  "我们": {
+    "en": [
+      "we",
+      "us"
+    ],
+    "ja": [
+      "私たち"
+    ],
+    "ko": [
+      "우리"
+    ],
+    "fr": [
+      "nous"
+    ],
+    "de": [
+      "wir"
+    ],
+    "es": [
+      "nosotros"
+    ],
+    "ru": [
+      "мы"
+    ],
+    "it": [
+      "noi"
+    ],
+    "pt": [
+      "nós"
+    ]
+  },
+  "他们": {
+    "en": [
+      "they",
+      "them"
+    ],
+    "ja": [
+      "彼ら"
+    ],
+    "ko": [
+      "그들"
+    ],
+    "fr": [
+      "ils"
+    ],
+    "de": [
+      "sie"
+    ],
+    "es": [
+      "ellos"
+    ],
+    "ru": [
+      "они"
+    ],
+    "it": [
+      "loro"
+    ],
+    "pt": [
+      "eles"
+    ]
+  },
+  "这个": {
+    "en": [
+      "this"
+    ],
+    "ja": [
+      "これ"
+    ],
+    "ko": [
+      "이것"
+    ],
+    "fr": [
+      "ceci"
+    ],
+    "de": [
+      "dies"
+    ],
+    "es": [
+      "esto"
+    ],
+    "ru": [
+      "это"
+    ],
+    "it": [
+      "questo"
+    ],
+    "pt": [
+      "isto"
+    ]
+  },
+  "那个": {
+    "en": [
+      "that"
+    ],
+    "ja": [
+      "それ"
+    ],
+    "ko": [
+      "그것"
+    ],
+    "fr": [
+      "cela"
+    ],
+    "de": [
+      "das"
+    ],
+    "es": [
+      "eso"
+    ],
+    "ru": [
+      "то"
+    ],
+    "it": [
+      "quello"
+    ],
+    "pt": [
+      "isso"
+    ]
+  },
+  "什么": {
+    "en": [
+      "what"
+    ],
+    "ja": [
+      "何"
+    ],
+    "ko": [
+      "무엇"
+    ],
+    "fr": [
+      "quoi"
+    ],
+    "de": [
+      "was"
+    ],
+    "es": [
+      "qué"
+    ],
+    "ru": [
+      "что"
+    ],
+    "it": [
+      "che cosa"
+    ],
+    "pt": [
+      "o quê"
+    ]
+  },
+  "为什么": {
+    "en": [
+      "why"
+    ],
+    "ja": [
+      "なぜ"
+    ],
+    "ko": [
+      "왜"
+    ],
+    "fr": [
+      "pourquoi"
+    ],
+    "de": [
+      "warum"
+    ],
+    "es": [
+      "por qué"
+    ],
+    "ru": [
+      "почему"
+    ],
+    "it": [
+      "perché"
+    ],
+    "pt": [
+      "por quê"
+    ]
+  },
+  "怎么": {
+    "en": [
+      "how"
+    ],
+    "ja": [
+      "どうやって"
+    ],
+    "ko": [
+      "어떻게"
+    ],
+    "fr": [
+      "comment"
+    ],
+    "de": [
+      "wie"
+    ],
+    "es": [
+      "cómo"
+    ],
+    "ru": [
+      "как"
+    ],
+    "it": [
+      "come"
+    ],
+    "pt": [
+      "como"
+    ]
+  },
+  "哪里": {
+    "en": [
+      "where"
+    ],
+    "ja": [
+      "どこ"
+    ],
+    "ko": [
+      "어디"
+    ],
+    "fr": [
+      "où"
+    ],
+    "de": [
+      "wo"
+    ],
+    "es": [
+      "dónde"
+    ],
+    "ru": [
+      "где"
+    ],
+    "it": [
+      "dove"
+    ],
+    "pt": [
+      "onde"
+    ]
+  },
+  "什么时候": {
+    "en": [
+      "when"
+    ],
+    "ja": [
+      "いつ"
+    ],
+    "ko": [
+      "언제"
+    ],
+    "fr": [
+      "quand"
+    ],
+    "de": [
+      "wann"
+    ],
+    "es": [
+      "cuándo"
+    ],
+    "ru": [
+      "когда"
+    ],
+    "it": [
+      "quando"
+    ],
+    "pt": [
+      "quando"
+    ]
+  },
+  "现在": {
+    "en": [
+      "now"
+    ],
+    "ja": [
+      "今"
+    ],
+    "ko": [
+      "지금"
+    ],
+    "fr": [
+      "maintenant"
+    ],
+    "de": [
+      "jetzt"
+    ],
+    "es": [
+      "ahora"
+    ],
+    "ru": [
+      "сейчас"
+    ],
+    "it": [
+      "adesso"
+    ],
+    "pt": [
+      "agora"
+    ]
+  },
+  "今天": {
+    "en": [
+      "today"
+    ],
+    "ja": [
+      "今日"
+    ],
+    "ko": [
+      "오늘"
+    ],
+    "fr": [
+      "aujourd'hui"
+    ],
+    "de": [
+      "heute"
+    ],
+    "es": [
+      "hoy"
+    ],
+    "ru": [
+      "сегодня"
+    ],
+    "it": [
+      "oggi"
+    ],
+    "pt": [
+      "hoje"
+    ]
+  },
+  "明天": {
+    "en": [
+      "tomorrow"
+    ],
+    "ja": [
+      "明日"
+    ],
+    "ko": [
+      "내일"
+    ],
+    "fr": [
+      "demain"
+    ],
+    "de": [
+      "morgen"
+    ],
+    "es": [
+      "mañana"
+    ],
+    "ru": [
+      "завтра"
+    ],
+    "it": [
+      "domani"
+    ],
+    "pt": [
+      "amanhã"
+    ]
+  },
+  "昨天": {
+    "en": [
+      "yesterday"
+    ],
+    "ja": [
+      "昨日"
+    ],
+    "ko": [
+      "어제"
+    ],
+    "fr": [
+      "hier"
+    ],
+    "de": [
+      "gestern"
+    ],
+    "es": [
+      "ayer"
+    ],
+    "ru": [
+      "вчера"
+    ],
+    "it": [
+      "ieri"
+    ],
+    "pt": [
+      "ontem"
+    ]
+  },
+  "时间": {
+    "en": [
+      "time"
+    ],
+    "ja": [
+      "時間"
+    ],
+    "ko": [
+      "시간"
+    ],
+    "fr": [
+      "temps"
+    ],
+    "de": [
+      "Zeit"
+    ],
+    "es": [
+      "tiempo"
+    ],
+    "ru": [
+      "время"
+    ],
+    "it": [
+      "tempo"
+    ],
+    "pt": [
+      "tempo"
+    ]
+  },
+  "朋友": {
+    "en": [
+      "friend"
+    ],
+    "ja": [
+      "友達"
+    ],
+    "ko": [
+      "친구"
+    ],
+    "fr": [
+      "ami"
+    ],
+    "de": [
+      "Freund"
+    ],
+    "es": [
+      "amigo"
+    ],
+    "ru": [
+      "друг"
+    ],
+    "it": [
+      "amico"
+    ],
+    "pt": [
+      "amigo"
+    ]
+  },
+  "家": {
+    "en": [
+      "home",
+      "family"
+    ],
+    "ja": [
+      "家"
+    ],
+    "ko": [
+      "집"
+    ],
+    "fr": [
+      "maison"
+    ],
+    "de": [
+      "Zuhause"
+    ],
+    "es": [
+      "casa"
+    ],
+    "ru": [
+      "дом"
+    ],
+    "it": [
+      "casa"
+    ],
+    "pt": [
+      "casa"
+    ]
+  },
+  "学校": {
+    "en": [
+      "school"
+    ],
+    "ja": [
+      "学校"
+    ],
+    "ko": [
+      "학교"
+    ],
+    "fr": [
+      "école"
+    ],
+    "de": [
+      "Schule"
+    ],
+    "es": [
+      "escuela"
+    ],
+    "ru": [
+      "школа"
+    ],
+    "it": [
+      "scuola"
+    ],
+    "pt": [
+      "escola"
+    ]
+  },
+  "老师": {
+    "en": [
+      "teacher"
+    ],
+    "ja": [
+      "先生"
+    ],
+    "ko": [
+      "선생님"
+    ],
+    "fr": [
+      "professeur"
+    ],
+    "de": [
+      "Lehrer"
+    ],
+    "es": [
+      "profesor"
+    ],
+    "ru": [
+      "учитель"
+    ],
+    "it": [
+      "insegnante"
+    ],
+    "pt": [
+      "professor"
+    ]
+  },
+  "学生": {
+    "en": [
+      "student"
+    ],
+    "ja": [
+      "学生"
+    ],
+    "ko": [
+      "학생"
+    ],
+    "fr": [
+      "étudiant"
+    ],
+    "de": [
+      "Schüler"
+    ],
+    "es": [
+      "estudiante"
+    ],
+    "ru": [
+      "студент"
+    ],
+    "it": [
+      "studente"
+    ],
+    "pt": [
+      "estudante"
+    ]
+  },
+  "学习": {
+    "en": [
+      "study",
+      "learn"
+    ],
+    "ja": [
+      "勉強する"
+    ],
+    "ko": [
+      "공부하다"
+    ],
+    "fr": [
+      "étudier"
+    ],
+    "de": [
+      "lernen"
+    ],
+    "es": [
+      "estudiar"
+    ],
+    "ru": [
+      "учиться"
+    ],
+    "it": [
+      "studiare"
+    ],
+    "pt": [
+      "estudar"
+    ]
+  },
+  "工作": {
+    "en": [
+      "work",
+      "job"
+    ],
+    "ja": [
+      "仕事"
+    ],
+    "ko": [
+      "일"
+    ],
+    "fr": [
+      "travail"
+    ],
+    "de": [
+      "Arbeit"
+    ],
+    "es": [
+      "trabajo"
+    ],
+    "ru": [
+      "работа"
+    ],
+    "it": [
+      "lavoro"
+    ],
+    "pt": [
+      "trabalho"
+    ]
+  },
+  "喜欢": {
+    "en": [
+      "like",
+      "enjoy"
+    ],
+    "ja": [
+      "好き"
+    ],
+    "ko": [
+      "좋아하다"
+    ],
+    "fr": [
+      "aimer"
+    ],
+    "de": [
+      "mögen"
+    ],
+    "es": [
+      "gustar"
+    ],
+    "ru": [
+      "нравиться"
+    ],
+    "it": [
+      "piacere"
+    ],
+    "pt": [
+      "gostar"
+    ]
+  },
+  "爱": {
+    "en": [
+      "love"
+    ],
+    "ja": [
+      "愛"
+    ],
+    "ko": [
+      "사랑"
+    ],
+    "fr": [
+      "amour"
+    ],
+    "de": [
+      "Liebe"
+    ],
+    "es": [
+      "amor"
+    ],
+    "ru": [
+      "любовь"
+    ],
+    "it": [
+      "amore"
+    ],
+    "pt": [
+      "amor"
+    ]
+  },
+  "吃饭": {
+    "en": [
+      "eat",
+      "have a meal"
+    ],
+    "ja": [
+      "食事をする"
+    ],
+    "ko": [
+      "밥을 먹다"
+    ],
+    "fr": [
+      "manger"
+    ],
+    "de": [
+      "essen"
+    ],
+    "es": [
+      "comer"
+    ],
+    "ru": [
+      "есть"
+    ],
+    "it": [
+      "mangiare"
+    ],
+    "pt": [
+      "comer"
+    ]
+  },
+  "喝水": {
+    "en": [
+      "drink water"
+    ],
+    "ja": [
+      "水を飲む"
+    ],
+    "ko": [
+      "물을 마시다"
+    ],
+    "fr": [
+      "boire de l'eau"
+    ],
+    "de": [
+      "Wasser trinken"
+    ],
+    "es": [
+      "beber agua"
+    ],
+    "ru": [
+      "пить воду"
+    ],
+    "it": [
+      "bere acqua"
+    ],
+    "pt": [
+      "beber água"
+    ]
+  },
+  "水": {
+    "en": [
+      "water"
+    ],
+    "ja": [
+      "水"
+    ],
+    "ko": [
+      "물"
+    ],
+    "fr": [
+      "eau"
+    ],
+    "de": [
+      "Wasser"
+    ],
+    "es": [
+      "agua"
+    ],
+    "ru": [
+      "вода"
+    ],
+    "it": [
+      "acqua"
+    ],
+    "pt": [
+      "água"
+    ]
+  },
+  "茶": {
+    "en": [
+      "tea"
+    ],
+    "ja": [
+      "お茶"
+    ],
+    "ko": [
+      "차"
+    ],
+    "fr": [
+      "thé"
+    ],
+    "de": [
+      "Tee"
+    ],
+    "es": [
+      "té"
+    ],
+    "ru": [
+      "чай"
+    ],
+    "it": [
+      "tè"
+    ],
+    "pt": [
+      "chá"
+    ]
+  },
+  "咖啡": {
+    "en": [
+      "coffee"
+    ],
+    "ja": [
+      "コーヒー"
+    ],
+    "ko": [
+      "커피"
+    ],
+    "fr": [
+      "café"
+    ],
+    "de": [
+      "Kaffee"
+    ],
+    "es": [
+      "café"
+    ],
+    "ru": [
+      "кофе"
+    ],
+    "it": [
+      "caffè"
+    ],
+    "pt": [
+      "café"
+    ]
+  },
+  "书": {
+    "en": [
+      "book"
+    ],
+    "ja": [
+      "本"
+    ],
+    "ko": [
+      "책"
+    ],
+    "fr": [
+      "livre"
+    ],
+    "de": [
+      "Buch"
+    ],
+    "es": [
+      "libro"
+    ],
+    "ru": [
+      "книга"
+    ],
+    "it": [
+      "libro"
+    ],
+    "pt": [
+      "livro"
+    ]
+  },
+  "电脑": {
+    "en": [
+      "computer"
+    ],
+    "ja": [
+      "パソコン"
+    ],
+    "ko": [
+      "컴퓨터"
+    ],
+    "fr": [
+      "ordinateur"
+    ],
+    "de": [
+      "Computer"
+    ],
+    "es": [
+      "ordenador"
+    ],
+    "ru": [
+      "компьютер"
+    ],
+    "it": [
+      "computer"
+    ],
+    "pt": [
+      "computador"
+    ]
+  },
+  "手机": {
+    "en": [
+      "mobile phone",
+      "cell phone"
+    ],
+    "ja": [
+      "携帯電話"
+    ],
+    "ko": [
+      "휴대전화"
+    ],
+    "fr": [
+      "téléphone portable"
+    ],
+    "de": [
+      "Handy"
+    ],
+    "es": [
+      "teléfono móvil"
+    ],
+    "ru": [
+      "мобильный телефон"
+    ],
+    "it": [
+      "cellulare"
+    ],
+    "pt": [
+      "celular"
+    ]
+  },
+  "软件": {
+    "en": [
+      "software"
+    ],
+    "ja": [
+      "ソフトウェア"
+    ],
+    "ko": [
+      "소프트웨어"
+    ],
+    "fr": [
+      "logiciel"
+    ],
+    "de": [
+      "Software"
+    ],
+    "es": [
+      "software"
+    ],
+    "ru": [
+      "программное обеспечение"
+    ],
+    "it": [
+      "software"
+    ],
+    "pt": [
+      "software"
+    ]
+  },
+  "程序": {
+    "en": [
+      "program"
+    ],
+    "ja": [
+      "プログラム"
+    ],
+    "ko": [
+      "프로그램"
+    ],
+    "fr": [
+      "programme"
+    ],
+    "de": [
+      "Programm"
+    ],
+    "es": [
+      "programa"
+    ],
+    "ru": [
+      "программа"
+    ],
+    "it": [
+      "programma"
+    ],
+    "pt": [
+      "programa"
+    ]
+  },
+  "游戏": {
+    "en": [
+      "game"
+    ],
+    "ja": [
+      "ゲーム"
+    ],
+    "ko": [
+      "게임"
+    ],
+    "fr": [
+      "jeu"
+    ],
+    "de": [
+      "Spiel"
+    ],
+    "es": [
+      "juego"
+    ],
+    "ru": [
+      "игра"
+    ],
+    "it": [
+      "gioco"
+    ],
+    "pt": [
+      "jogo"
+    ]
+  },
+  "人工智能": {
+    "en": [
+      "artificial intelligence",
+      "AI"
+    ],
+    "ja": [
+      "人工知能"
+    ],
+    "ko": [
+      "인공지능"
+    ],
+    "fr": [
+      "intelligence artificielle"
+    ],
+    "de": [
+      "künstliche Intelligenz"
+    ],
+    "es": [
+      "inteligencia artificial"
+    ],
+    "ru": [
+      "искусственный интеллект"
+    ],
+    "it": [
+      "intelligenza artificiale"
+    ],
+    "pt": [
+      "inteligência artificial"
+    ]
+  },
+  "语言": {
+    "en": [
+      "language"
+    ],
+    "ja": [
+      "言語"
+    ],
+    "ko": [
+      "언어"
+    ],
+    "fr": [
+      "langue"
+    ],
+    "de": [
+      "Sprache"
+    ],
+    "es": [
+      "idioma"
+    ],
+    "ru": [
+      "язык"
+    ],
+    "it": [
+      "lingua"
+    ],
+    "pt": [
+      "língua"
+    ]
+  },
+  "英语": {
+    "en": [
+      "English"
+    ],
+    "ja": [
+      "英語"
+    ],
+    "ko": [
+      "영어"
+    ],
+    "fr": [
+      "anglais"
+    ],
+    "de": [
+      "Englisch"
+    ],
+    "es": [
+      "inglés"
+    ],
+    "ru": [
+      "английский"
+    ],
+    "it": [
+      "inglese"
+    ],
+    "pt": [
+      "inglês"
+    ]
+  },
+  "日语": {
+    "en": [
+      "Japanese"
+    ],
+    "ja": [
+      "日本語"
+    ],
+    "ko": [
+      "일본어"
+    ],
+    "fr": [
+      "japonais"
+    ],
+    "de": [
+      "Japanisch"
+    ],
+    "es": [
+      "japonés"
+    ],
+    "ru": [
+      "японский"
+    ],
+    "it": [
+      "giapponese"
+    ],
+    "pt": [
+      "japonês"
+    ]
+  },
+  "中文": {
+    "en": [
+      "Chinese"
+    ],
+    "ja": [
+      "中国語"
+    ],
+    "ko": [
+      "중국어"
+    ],
+    "fr": [
+      "chinois"
+    ],
+    "de": [
+      "Chinesisch"
+    ],
+    "es": [
+      "chino"
+    ],
+    "ru": [
+      "китайский"
+    ],
+    "it": [
+      "cinese"
+    ],
+    "pt": [
+      "chinês"
+    ]
+  },
+  "中国": {
+    "en": [
+      "China"
+    ],
+    "ja": [
+      "中国"
+    ],
+    "ko": [
+      "중국"
+    ],
+    "fr": [
+      "Chine"
+    ],
+    "de": [
+      "China"
+    ],
+    "es": [
+      "China"
+    ],
+    "ru": [
+      "Китай"
+    ],
+    "it": [
+      "Cina"
+    ],
+    "pt": [
+      "China"
+    ]
+  },
+  "日本": {
+    "en": [
+      "Japan"
+    ],
+    "ja": [
+      "日本"
+    ],
+    "ko": [
+      "일본"
+    ],
+    "fr": [
+      "Japon"
+    ],
+    "de": [
+      "Japan"
+    ],
+    "es": [
+      "Japón"
+    ],
+    "ru": [
+      "Япония"
+    ],
+    "it": [
+      "Giappone"
+    ],
+    "pt": [
+      "Japão"
+    ]
+  },
+  "美国": {
+    "en": [
+      "United States",
+      "America"
+    ],
+    "ja": [
+      "アメリカ"
+    ],
+    "ko": [
+      "미국"
+    ],
+    "fr": [
+      "États-Unis"
+    ],
+    "de": [
+      "USA"
+    ],
+    "es": [
+      "Estados Unidos"
+    ],
+    "ru": [
+      "США"
+    ],
+    "it": [
+      "Stati Uniti"
+    ],
+    "pt": [
+      "Estados Unidos"
+    ]
+  },
+  "漂亮": {
+    "en": [
+      "beautiful",
+      "pretty"
+    ],
+    "ja": [
+      "きれい"
+    ],
+    "ko": [
+      "예쁜"
+    ],
+    "fr": [
+      "beau"
+    ],
+    "de": [
+      "schön"
+    ],
+    "es": [
+      "bonito"
+    ],
+    "ru": [
+      "красивый"
+    ],
+    "it": [
+      "bello"
+    ],
+    "pt": [
+      "bonito"
+    ]
+  },
+  "高兴": {
+    "en": [
+      "happy",
+      "glad"
+    ],
+    "ja": [
+      "うれしい"
+    ],
+    "ko": [
+      "기쁘다"
+    ],
+    "fr": [
+      "heureux"
+    ],
+    "de": [
+      "glücklich"
+    ],
+    "es": [
+      "feliz"
+    ],
+    "ru": [
+      "счастливый"
+    ],
+    "it": [
+      "felice"
+    ],
+    "pt": [
+      "feliz"
+    ]
+  },
+  "难过": {
+    "en": [
+      "sad"
+    ],
+    "ja": [
+      "悲しい"
+    ],
+    "ko": [
+      "슬프다"
+    ],
+    "fr": [
+      "triste"
+    ],
+    "de": [
+      "traurig"
+    ],
+    "es": [
+      "triste"
+    ],
+    "ru": [
+      "грустный"
+    ],
+    "it": [
+      "triste"
+    ],
+    "pt": [
+      "triste"
+    ]
+  },
+  "困难": {
+    "en": [
+      "difficult",
+      "hard"
+    ],
+    "ja": [
+      "難しい"
+    ],
+    "ko": [
+      "어려운"
+    ],
+    "fr": [
+      "difficile"
+    ],
+    "de": [
+      "schwierig"
+    ],
+    "es": [
+      "difícil"
+    ],
+    "ru": [
+      "трудный"
+    ],
+    "it": [
+      "difficile"
+    ],
+    "pt": [
+      "difícil"
+    ]
+  },
+  "容易": {
+    "en": [
+      "easy"
+    ],
+    "ja": [
+      "簡単"
+    ],
+    "ko": [
+      "쉬운"
+    ],
+    "fr": [
+      "facile"
+    ],
+    "de": [
+      "einfach"
+    ],
+    "es": [
+      "fácil"
+    ],
+    "ru": [
+      "лёгкий"
+    ],
+    "it": [
+      "facile"
+    ],
+    "pt": [
+      "fácil"
+    ]
+  },
+  "重要": {
+    "en": [
+      "important"
+    ],
+    "ja": [
+      "重要"
+    ],
+    "ko": [
+      "중요한"
+    ],
+    "fr": [
+      "important"
+    ],
+    "de": [
+      "wichtig"
+    ],
+    "es": [
+      "importante"
+    ],
+    "ru": [
+      "важный"
+    ],
+    "it": [
+      "importante"
+    ],
+    "pt": [
+      "importante"
+    ]
+  },
+  "可能": {
+    "en": [
+      "possible",
+      "perhaps"
+    ],
+    "ja": [
+      "可能"
+    ],
+    "ko": [
+      "가능한"
+    ],
+    "fr": [
+      "possible"
+    ],
+    "de": [
+      "möglich"
+    ],
+    "es": [
+      "posible"
+    ],
+    "ru": [
+      "возможно"
+    ],
+    "it": [
+      "possibile"
+    ],
+    "pt": [
+      "possível"
+    ]
+  },
+  "已经": {
+    "en": [
+      "already"
+    ],
+    "ja": [
+      "もう"
+    ],
+    "ko": [
+      "이미"
+    ],
+    "fr": [
+      "déjà"
+    ],
+    "de": [
+      "schon"
+    ],
+    "es": [
+      "ya"
+    ],
+    "ru": [
+      "уже"
+    ],
+    "it": [
+      "già"
+    ],
+    "pt": [
+      "já"
+    ]
+  },
+  "一直": {
+    "en": [
+      "always",
+      "all along"
+    ],
+    "ja": [
+      "ずっと"
+    ],
+    "ko": [
+      "계속"
+    ],
+    "fr": [
+      "toujours"
+    ],
+    "de": [
+      "immer"
+    ],
+    "es": [
+      "siempre"
+    ],
+    "ru": [
+      "всегда"
+    ],
+    "it": [
+      "sempre"
+    ],
+    "pt": [
+      "sempre"
+    ]
+  },
+  "正在": {
+    "en": [
+      "currently",
+      "in progress"
+    ],
+    "ja": [
+      "～しているところ"
+    ],
+    "ko": [
+      "~하는 중"
+    ],
+    "fr": [
+      "en train de"
+    ],
+    "de": [
+      "gerade"
+    ],
+    "es": [
+      "ahora mismo"
+    ],
+    "ru": [
+      "сейчас"
+    ],
+    "it": [
+      "in corso"
+    ],
+    "pt": [
+      "agora"
+    ]
+  },
+  "一起": {
+    "en": [
+      "together"
+    ],
+    "ja": [
+      "一緒に"
+    ],
+    "ko": [
+      "함께"
+    ],
+    "fr": [
+      "ensemble"
+    ],
+    "de": [
+      "zusammen"
+    ],
+    "es": [
+      "juntos"
+    ],
+    "ru": [
+      "вместе"
+    ],
+    "it": [
+      "insieme"
+    ],
+    "pt": [
+      "juntos"
+    ]
+  },
+  "努力": {
+    "en": [
+      "effort",
+      "work hard"
+    ],
+    "ja": [
+      "努力"
+    ],
+    "ko": [
+      "노력"
+    ],
+    "fr": [
+      "effort"
+    ],
+    "de": [
+      "Mühe"
+    ],
+    "es": [
+      "esfuerzo"
+    ],
+    "ru": [
+      "усилие"
+    ],
+    "it": [
+      "impegno"
+    ],
+    "pt": [
+      "esforço"
+    ]
+  },
+  "成功": {
+    "en": [
+      "success"
+    ],
+    "ja": [
+      "成功"
+    ],
+    "ko": [
+      "성공"
+    ],
+    "fr": [
+      "succès"
+    ],
+    "de": [
+      "Erfolg"
+    ],
+    "es": [
+      "éxito"
+    ],
+    "ru": [
+      "успех"
+    ],
+    "it": [
+      "successo"
+    ],
+    "pt": [
+      "sucesso"
+    ]
+  },
+  "失败": {
+    "en": [
+      "failure",
+      "fail"
+    ],
+    "ja": [
+      "失敗"
+    ],
+    "ko": [
+      "실패"
+    ],
+    "fr": [
+      "échec"
+    ],
+    "de": [
+      "Misserfolg"
+    ],
+    "es": [
+      "fracaso"
+    ],
+    "ru": [
+      "неудача"
+    ],
+    "it": [
+      "fallimento"
+    ],
+    "pt": [
+      "fracasso"
+    ]
+  },
+  "开始": {
+    "en": [
+      "begin",
+      "start"
+    ],
+    "ja": [
+      "始める"
+    ],
+    "ko": [
+      "시작하다"
+    ],
+    "fr": [
+      "commencer"
+    ],
+    "de": [
+      "anfangen"
+    ],
+    "es": [
+      "empezar"
+    ],
+    "ru": [
+      "начать"
+    ],
+    "it": [
+      "iniziare"
+    ],
+    "pt": [
+      "começar"
+    ]
+  },
+  "结束": {
+    "en": [
+      "finish",
+      "end"
+    ],
+    "ja": [
+      "終わる"
+    ],
+    "ko": [
+      "끝나다"
+    ],
+    "fr": [
+      "finir"
+    ],
+    "de": [
+      "enden"
+    ],
+    "es": [
+      "terminar"
+    ],
+    "ru": [
+      "закончить"
+    ],
+    "it": [
+      "finire"
+    ],
+    "pt": [
+      "terminar"
+    ]
+  },
+  "继续": {
+    "en": [
+      "continue"
+    ],
+    "ja": [
+      "続ける"
+    ],
+    "ko": [
+      "계속하다"
+    ],
+    "fr": [
+      "continuer"
+    ],
+    "de": [
+      "fortsetzen"
+    ],
+    "es": [
+      "continuar"
+    ],
+    "ru": [
+      "продолжать"
+    ],
+    "it": [
+      "continuare"
+    ],
+    "pt": [
+      "continuar"
+    ]
+  },
+  "理解": {
+    "en": [
+      "understand"
+    ],
+    "ja": [
+      "理解する"
+    ],
+    "ko": [
+      "이해하다"
+    ],
+    "fr": [
+      "comprendre"
+    ],
+    "de": [
+      "verstehen"
+    ],
+    "es": [
+      "entender"
+    ],
+    "ru": [
+      "понимать"
+    ],
+    "it": [
+      "capire"
+    ],
+    "pt": [
+      "entender"
+    ]
+  },
+  "记忆": {
+    "en": [
+      "memory",
+      "memorize"
+    ],
+    "ja": [
+      "記憶"
+    ],
+    "ko": [
+      "기억"
+    ],
+    "fr": [
+      "mémoire"
+    ],
+    "de": [
+      "Gedächtnis"
+    ],
+    "es": [
+      "memoria"
+    ],
+    "ru": [
+      "память"
+    ],
+    "it": [
+      "memoria"
+    ],
+    "pt": [
+      "memória"
+    ]
+  },
+  "单词": {
+    "en": [
+      "word"
+    ],
+    "ja": [
+      "単語"
+    ],
+    "ko": [
+      "단어"
+    ],
+    "fr": [
+      "mot"
+    ],
+    "de": [
+      "Wort"
+    ],
+    "es": [
+      "palabra"
+    ],
+    "ru": [
+      "слово"
+    ],
+    "it": [
+      "parola"
+    ],
+    "pt": [
+      "palavra"
+    ]
+  },
+  "词典": {
+    "en": [
+      "dictionary"
+    ],
+    "ja": [
+      "辞書"
+    ],
+    "ko": [
+      "사전"
+    ],
+    "fr": [
+      "dictionnaire"
+    ],
+    "de": [
+      "Wörterbuch"
+    ],
+    "es": [
+      "diccionario"
+    ],
+    "ru": [
+      "словарь"
+    ],
+    "it": [
+      "dizionario"
+    ],
+    "pt": [
+      "dicionário"
+    ]
+  },
+  "翻译": {
+    "en": [
+      "translate",
+      "translation"
+    ],
+    "ja": [
+      "翻訳"
+    ],
+    "ko": [
+      "번역"
+    ],
+    "fr": [
+      "traduire"
+    ],
+    "de": [
+      "übersetzen"
+    ],
+    "es": [
+      "traducir"
+    ],
+    "ru": [
+      "переводить"
+    ],
+    "it": [
+      "tradurre"
+    ],
+    "pt": [
+      "traduzir"
+    ]
+  },
+  "阅读": {
+    "en": [
+      "read",
+      "reading"
+    ],
+    "ja": [
+      "読む"
+    ],
+    "ko": [
+      "읽다"
+    ],
+    "fr": [
+      "lire"
+    ],
+    "de": [
+      "lesen"
+    ],
+    "es": [
+      "leer"
+    ],
+    "ru": [
+      "читать"
+    ],
+    "it": [
+      "leggere"
+    ],
+    "pt": [
+      "ler"
+    ]
+  },
+  "听力": {
+    "en": [
+      "listening comprehension"
+    ],
+    "ja": [
+      "リスニング"
+    ],
+    "ko": [
+      "듣기"
+    ],
+    "fr": [
+      "compréhension orale"
+    ],
+    "de": [
+      "Hörverstehen"
+    ],
+    "es": [
+      "comprensión auditiva"
+    ],
+    "ru": [
+      "аудирование"
+    ],
+    "it": [
+      "ascolto"
+    ],
+    "pt": [
+      "compreensão auditiva"
+    ]
+  },
+  "发音": {
+    "en": [
+      "pronunciation"
+    ],
+    "ja": [
+      "発音"
+    ],
+    "ko": [
+      "발음"
+    ],
+    "fr": [
+      "prononciation"
+    ],
+    "de": [
+      "Aussprache"
+    ],
+    "es": [
+      "pronunciación"
+    ],
+    "ru": [
+      "произношение"
+    ],
+    "it": [
+      "pronuncia"
+    ],
+    "pt": [
+      "pronúncia"
+    ]
+  },
+  "练习": {
+    "en": [
+      "practice",
+      "exercise"
+    ],
+    "ja": [
+      "練習"
+    ],
+    "ko": [
+      "연습"
+    ],
+    "fr": [
+      "exercice"
+    ],
+    "de": [
+      "Übung"
+    ],
+    "es": [
+      "práctica"
+    ],
+    "ru": [
+      "практика"
+    ],
+    "it": [
+      "pratica"
+    ],
+    "pt": [
+      "prática"
+    ]
+  },
+  "你好世界": {
+    "en": [
+      "hello world"
+    ],
+    "ja": [
+      "こんにちは世界"
+    ],
+    "ko": [
+      "안녕 세상"
+    ],
+    "fr": [
+      "bonjour le monde"
+    ],
+    "de": [
+      "Hallo Welt"
+    ],
+    "es": [
+      "hola mundo"
+    ],
+    "ru": [
+      "привет, мир"
+    ],
+    "it": [
+      "ciao mondo"
+    ],
+    "pt": [
+      "olá mundo"
+    ]
+  },
+  "我爱你": {
+    "en": [
+      "I love you"
+    ],
+    "ja": [
+      "愛してる"
+    ],
+    "ko": [
+      "사랑해"
+    ],
+    "fr": [
+      "je t'aime"
+    ],
+    "de": [
+      "Ich liebe dich"
+    ],
+    "es": [
+      "te quiero"
+    ],
+    "ru": [
+      "я тебя люблю"
+    ],
+    "it": [
+      "ti amo"
+    ],
+    "pt": [
+      "eu te amo"
+    ]
+  },
+  "你好吗": {
+    "en": [
+      "how are you?"
+    ],
+    "ja": [
+      "お元気ですか"
+    ],
+    "ko": [
+      "잘 지내세요?"
+    ],
+    "fr": [
+      "comment allez-vous ?"
+    ],
+    "de": [
+      "wie geht es dir?"
+    ],
+    "es": [
+      "¿cómo estás?"
+    ],
+    "ru": [
+      "как дела?"
+    ],
+    "it": [
+      "come stai?"
+    ],
+    "pt": [
+      "como vai?"
+    ]
+  },
+  "我不知道": {
+    "en": [
+      "I don't know"
+    ],
+    "ja": [
+      "わかりません"
+    ],
+    "ko": [
+      "모르겠어요"
+    ],
+    "fr": [
+      "je ne sais pas"
+    ],
+    "de": [
+      "ich weiß nicht"
+    ],
+    "es": [
+      "no lo sé"
+    ],
+    "ru": [
+      "я не знаю"
+    ],
+    "it": [
+      "non lo so"
+    ],
+    "pt": [
+      "não sei"
+    ]
+  },
+  "请问": {
+    "en": [
+      "excuse me",
+      "may I ask"
+    ],
+    "ja": [
+      "すみません"
+    ],
+    "ko": [
+      "실례합니다"
+    ],
+    "fr": [
+      "excusez-moi"
+    ],
+    "de": [
+      "Entschuldigung"
+    ],
+    "es": [
+      "disculpe"
+    ],
+    "ru": [
+      "извините"
+    ],
+    "it": [
+      "mi scusi"
+    ],
+    "pt": [
+      "com licença"
+    ]
+  },
+  "我明白了": {
+    "en": [
+      "I understand",
+      "got it"
+    ],
+    "ja": [
+      "わかりました"
+    ],
+    "ko": [
+      "알겠습니다"
+    ],
+    "fr": [
+      "j'ai compris"
+    ],
+    "de": [
+      "ich verstehe"
+    ],
+    "es": [
+      "entendido"
+    ],
+    "ru": [
+      "я понял"
+    ],
+    "it": [
+      "ho capito"
+    ],
+    "pt": [
+      "entendi"
+    ]
+  },
+  "加油": {
+    "en": [
+      "keep going",
+      "you can do it"
+    ],
+    "ja": [
+      "頑張って"
+    ],
+    "ko": [
+      "힘내세요"
+    ],
+    "fr": [
+      "courage"
+    ],
+    "de": [
+      "viel Erfolg"
+    ],
+    "es": [
+      "ánimo"
+    ],
+    "ru": [
+      "давай"
+    ],
+    "it": [
+      "forza"
+    ],
+    "pt": [
+      "força"
+    ]
+  }
+}

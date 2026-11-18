@@ -1,0 +1,34 @@
+{
+  "repo": "finktheartist/sakuga-vfx",
+  "commit": "c3dabb173928a3ad2372183103caf2e6f50953d0",
+  "records": [
+    {
+      "component": "button",
+      "sha256": "2d6f452b4d9c9489a4da9b6a1f0fb2ef52d88b5a28331eb3b1c5076742e0ddb8"
+    },
+    {
+      "component": "toggle",
+      "sha256": "0f6115ea1705fda94e8c85f92ee081bf64f71ce6148a8d2e472f28b53f411516"
+    },
+    {
+      "component": "tabs",
+      "sha256": "0467ac7bb687d8a6f8834b6e5ea7bd36133c2e126fb7231c916daac2a5d2fef5"
+    },
+    {
+      "component": "checkbox",
+      "sha256": "f8e89fd1915386a309c8e94425368a7a522529400505bdbbe227138f68704973"
+    },
+    {
+      "component": "input",
+      "sha256": "f925605c387c16dc6dad7b946789b0755d40b37ffe2f27860bd8211cd841e8bf"
+    },
+    {
+      "component": "slider",
+      "sha256": "7924dec6ed71a86c8e8b611606bb4488dc4bd13f0353daa02fa755142420dbaf"
+    },
+    {
+      "component": "toast",
+      "sha256": "8b47d9e6bca4fad1bfae2aeefd4df45fdb81999dec1a02bbd941eb65ed93394c"
+    }
+  ]
+}

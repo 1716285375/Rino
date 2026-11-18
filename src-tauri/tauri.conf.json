@@ -1,0 +1,61 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "RINO",
+  "version": "0.1.0",
+  "identifier": "dev.rino.linguistic",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://127.0.0.1:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [
+      {
+        "label": "main",
+        "title": "RINO",
+        "width": 720,
+        "height": 600,
+        "minWidth": 620,
+        "minHeight": 480,
+        "visible": false,
+        "resizable": true,
+        "backgroundColor": "#FBFAFF",
+        "center": true
+      },
+      {
+        "label": "hud",
+        "title": "RINO HUD",
+        "url": "index.html?window=hud",
+        "width": 560,
+        "height": 240,
+        "decorations": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "visible": false,
+        "resizable": false,
+        "focusable": false,
+        "shadow": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' asset: http://asset.localhost; connect-src ipc: http://ipc.localhost; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'",
+      "devCsp": "default-src 'self' http://127.0.0.1:1420; connect-src ipc: http://ipc.localhost http://127.0.0.1:1420 ws://127.0.0.1:1420; img-src 'self' data:; script-src 'self' 'unsafe-eval' http://127.0.0.1:1420; style-src 'self' 'unsafe-inline'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "icon": [
+      "icons/icon.png",
+      "icons/icon.ico"
+    ],
+    "resources": [
+      "resources/*"
+    ]
+  }
+}
