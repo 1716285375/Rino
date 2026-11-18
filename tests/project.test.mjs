@@ -48,4 +48,6 @@ test('RINO is single-instance on Windows',()=>{
  const lib=read('src-tauri/src/lib.rs');
  assert.match(lib,/tauri_plugin_single_instance::init/);
  assert.match(lib,/get_webview_window\("main"\)/);
+ // The guard must be registered before setup creates windows, tray or threads.
+ assert.ok(lib.indexOf('tauri_plugin_single_instance::init') < lib.indexOf('.setup('));
 });

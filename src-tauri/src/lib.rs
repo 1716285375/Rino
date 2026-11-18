@@ -434,6 +434,8 @@ fn monitor_loop(app:tauri::AppHandle, state:Arc<RuntimeState>) {
     }
 }
 pub fn run() {
+    // Keep this plugin first: a second process must be rejected before any
+    // window, tray icon or background monitor is created.
     tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app,_argv,_cwd| {
             if let Some(w)=app.get_webview_window("main"){

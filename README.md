@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/readme/demo.gif" alt="RINO 演示：拼音候选、浮窗译文、输入记录、生词本、设置与关于" width="880">
+  <img src="assets/readme/demo.gif" alt="RINO 演示：拼音候选、浮窗译文、输入记录、生词本、设置与关于" width="760">
 </p>
 
 ## 使用方式
