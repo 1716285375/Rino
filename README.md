@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/readme/demo.gif" alt="RINO 演示：拼音候选、浮窗译文、输入记录、生词本、设置与关于" width="760">
+  <img src="assets/readme/demo.gif" alt="RINO Windows 宣传演示：随字而译、输入记录、生词本、设置与关于" width="700">
 </p>
 
 ## 使用方式
@@ -31,7 +31,7 @@
 
 
 <p align="center">
-  <img src="assets/readme/hud.png" alt="浮窗在微软拼音候选旁显示译文" width="620">
+  <img src="assets/readme/nihaoma.gif" alt="输入 nihaoma 时，浮窗随候选同步显示译文" width="620">
 </p>
 
 ## 主要功能
