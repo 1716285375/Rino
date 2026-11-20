@@ -28,6 +28,8 @@ anyhow = "1"
 thiserror = "2"
 parking_lot = "0.12"
 url = "2"
+msedge-tts = "0.4.1"
+base64 = "0.22"
 
 [target.'cfg(windows)'.dependencies]
 uiautomation = { version = "0.25.1", default-features = false, features = ["pattern", "control", "input"] }

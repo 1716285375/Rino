@@ -25,6 +25,10 @@ const WINEVENT_OUTOFCONTEXT: u32 = 0x0000;
 const VK_CONTROL: i32 = 0x11;
 const VK_MENU: i32 = 0x12;
 const VK_SHIFT: i32 = 0x10;
+const VK_TAB: u32 = 0x09;
+const INPUT_KEYBOARD: u32 = 1;
+const KEYEVENTF_KEYUP: u32 = 0x0002;
+const KEYEVENTF_UNICODE: u32 = 0x0004;
 
 #[repr(C)]
 struct KbdLlHookStruct {
@@ -65,6 +69,50 @@ struct Msg {
     private: usize,
 }
 
+#[repr(C)]
+#[derive(Clone, Copy)]
+struct KeybdInput {
+    vk: u16,
+    scan: u16,
+    flags: u32,
+    time: u32,
+    extra: usize,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+struct MouseInput {
+    dx: i32,
+    dy: i32,
+    mouse_data: u32,
+    flags: u32,
+    time: u32,
+    extra: usize,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+struct HardwareInput {
+    msg: u32,
+    param_l: u16,
+    param_h: u16,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+union InputUnion {
+    keyboard: KeybdInput,
+    mouse: MouseInput,
+    hardware: HardwareInput,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+struct Input {
+    kind: u32,
+    data: InputUnion,
+}
+
 extern "system" {
     fn SetWindowsHookExW(
         id: i32,
@@ -77,6 +125,8 @@ extern "system" {
     fn GetAsyncKeyState(vk: i32) -> i16;
     fn GetWindowRect(hwnd: isize, rect: *mut WRect) -> i32;
     fn GetWindowThreadProcessId(hwnd: isize, pid: *mut u32) -> u32;
+    fn GetForegroundWindow() -> isize;
+    fn SendInput(inputs: u32, events: *const Input, size: i32) -> u32;
     fn SetWinEventHook(
         min: u32,
         max: u32,
@@ -180,6 +230,49 @@ fn modifiers_held() -> bool {
     }
 }
 
+fn foreground_pid() -> Option<u32> {
+    unsafe {
+        let hwnd = GetForegroundWindow();
+        if hwnd == 0 { return None; }
+        let mut pid = 0u32;
+        GetWindowThreadProcessId(hwnd, &mut pid);
+        (pid != 0).then_some(pid)
+    }
+}
+
+fn key_event(vk: u16, scan: u16, flags: u32) -> Input {
+    Input {
+        kind: INPUT_KEYBOARD,
+        data: InputUnion { keyboard: KeybdInput { vk, scan, flags, time: 0, extra: 0 } },
+    }
+}
+
+fn send_input(events: &[Input]) -> bool {
+    if events.is_empty() { return false; }
+    unsafe { SendInput(events.len() as u32, events.as_ptr(), std::mem::size_of::<Input>() as i32) == events.len() as u32 }
+}
+
+/// Cancel the IME composition and type the translation as Unicode into the
+/// focused control. Both are queued in one SendInput call so Windows delivers
+/// Escape before the characters; there is no artificial pause between them.
+/// The HUD is non-activating, so the target keeps focus.
+fn translation_events(text:&str)->Vec<Input>{
+    let mut events=Vec::with_capacity(text.encode_utf16().count()*2+2);
+    events.push(key_event(0x1B,0,0));
+    events.push(key_event(0x1B,0,KEYEVENTF_KEYUP));
+    for unit in text.encode_utf16(){
+        events.push(key_event(0,unit,KEYEVENTF_UNICODE));
+        events.push(key_event(0,unit,KEYEVENTF_UNICODE|KEYEVENTF_KEYUP));
+    }
+    events
+}
+
+fn inject_translation(text: &str, pid: u32) -> bool {
+    let clean = text.split_whitespace().collect::<Vec<_>>().join(" ");
+    if clean.is_empty() || foreground_pid() != Some(pid) { return false; }
+    send_input(&translation_events(&clean))
+}
+
 /// Keys that make Microsoft Pinyin commit the composition (and close the bar).
 fn is_commit_key(vk: u32) -> bool {
     match vk {
@@ -199,9 +292,26 @@ unsafe extern "system" fn callback(code: i32, wparam: usize, lparam: isize) -> i
         && lparam != 0
     {
         let info = &*(lparam as *const KbdLlHookStruct);
+        let shift = unsafe { (GetAsyncKeyState(VK_SHIFT) as u16 & 0x8000) != 0 };
+        // Plain Tab completes with the current translation instead of
+        // committing the Chinese candidate. Shift/Ctrl/Alt+Tab keep their
+        // normal meaning.
+        if info.vk_code == VK_TAB && !modifiers_held() && !shift {
+            if let Some((pid, text)) = crate::take_hud_completion() {
+                if !text.trim().is_empty() && foreground_pid() == Some(pid) {
+                    hide_now("tab fill", 700);
+                    let text = text.trim().to_owned();
+                    std::thread::spawn(move || {
+                        let chars = text.chars().count();
+                        let ok = inject_translation(&text, pid);
+                        crate::trace(&format!("tab fill ok={ok} chars={chars}"));
+                    });
+                    return 1;
+                }
+            }
+        }
         // Shift+Space toggles full/half width instead of committing.
-        let shift_space =
-            info.vk_code == 0x20 && unsafe { (GetAsyncKeyState(VK_SHIFT) as u16 & 0x8000) != 0 };
+        let shift_space = info.vk_code == 0x20 && shift;
         if is_commit_key(info.vk_code) && !modifiers_held() && !shift_space {
             hide_now(&format!("key vk=0x{:02X}", info.vk_code), 600);
         } else if info.vk_code == 0x08
@@ -318,6 +428,38 @@ mod tests {
         }
         for vk in [0x08u32, 0x25, 0x26, 0x28, 0x41, 0x10] {
             assert!(!is_commit_key(vk), "must not commit for vk={vk:#x}");
+        }
+    }
+
+    #[test]
+    fn escape_is_sent_as_virtual_key() {
+        let event = key_event(0x1B, 0, 0);
+        unsafe {
+            assert_eq!(event.data.keyboard.vk, 0x1B);
+            assert_eq!(event.data.keyboard.scan, 0);
+            assert_eq!(event.data.keyboard.flags, 0);
+        }
+    }
+
+    #[test]
+    fn unicode_is_sent_via_scan_code() {
+        let event = key_event(0, 'h' as u16, KEYEVENTF_UNICODE);
+        unsafe {
+            assert_eq!(event.data.keyboard.vk, 0);
+            assert_eq!(event.data.keyboard.scan, 'h' as u16);
+            assert_eq!(event.data.keyboard.flags, KEYEVENTF_UNICODE);
+        }
+    }
+
+    #[test]
+    fn escape_precedes_translation_in_one_queue() {
+        let events = translation_events("hello");
+        assert_eq!(events.len(), 2 + "hello".encode_utf16().count() * 2);
+        unsafe {
+            assert_eq!(events[0].data.keyboard.vk, 0x1B);
+            assert_eq!(events[1].data.keyboard.flags, KEYEVENTF_KEYUP);
+            assert_eq!(events[2].data.keyboard.scan, 'h' as u16);
+            assert_eq!(events[2].data.keyboard.flags, KEYEVENTF_UNICODE);
         }
     }
 }

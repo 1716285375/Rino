@@ -1,11 +1,13 @@
 import React,{createElement,useCallback,useEffect,useMemo,useRef,useState} from 'react';
+import {createPortal} from 'react-dom';
 import {createRoot} from 'react-dom/client';
 import {AnimatePresence,motion} from 'motion/react';
-import {Activity,ArrowRight,BookMarked,Check,ChevronLeft,ChevronRight,ClipboardCopy,Clock,Code2,Copyright,Download,FileText,Gauge,Globe2,History,Languages,LayoutGrid,Loader2,Mail,Moon,Pause,Play,Radio,RefreshCw,Search,Settings2,Sparkles,Star,Sun,Table2,Terminal,Trash2,Volume2,X,Scale} from 'lucide-react';
-import {call,clearHistory,confirmClose,deleteHistory,history as readHistory,inTauri,listenEvent,metrics as readMetrics,models as readModels,readSettings,saveSettings,showMain,speak,translate as requestTranslate,vocab as readVocab} from './api';
+import {Activity,ArrowRight,BookMarked,Check,ChevronLeft,ChevronRight,ClipboardCopy,Clock,Code2,Copyright,Download,FileText,Gauge,Globe2,History,Languages,LayoutGrid,Loader2,Mail,Moon,Pause,Play,Radio,RefreshCw,Search,Settings2,Sparkles,Star,Sun,Table2,Terminal,Trash2,Volume2,X,Scale,Info,Power} from 'lucide-react';
+import {call,clearHistory,confirmClose,deleteHistory,emitToHud,history as readHistory,inTauri,listenEvent,metrics as readMetrics,models as readModels,readSettings,saveSettings,showMain,speak,stopSpeak,translate as requestTranslate,vocab as readVocab} from './api';
 import {Logo} from './components/Logo';
 import type {AppSettings,CandidateSnapshot,HistoryRow,Metrics,ModelRecord,ProviderProfile,Translation,VocabRow} from './types';
 import {LANGUAGES,MODEL_PRESETS} from './types';
+import {EDGE_VOICES,edgeVoiceFor,speakSample} from './tts';
 import './styles/main.css';
 import './styles/hud.css';
 
@@ -44,24 +46,29 @@ const dir=(s:string,t:string)=>`${LANGUAGES[s]??s} → ${LANGUAGES[t]??t}`;
 
 /* ---------------------------------------------------------------- HUD view */
 function HudView(){
+ useEffect(()=>{const stop=(e:Event)=>e.preventDefault();document.addEventListener('contextmenu',stop);return()=>document.removeEventListener('contextmenu',stop)},[]);
  const [candidate,setCandidate]=useState<CandidateSnapshot|null>(null);
  const [translation,setTranslation]=useState<Translation|null>(null);
  const [error,setError]=useState('');
  const [settings,setSettings]=useState<AppSettings|null>(null);
+ const speechEnabled=useRef(false);
+ const latestTranslation=useRef<Translation|null>(null);
+ const settingsRef=useRef<AppSettings|null>(null);
  useEffect(()=>{
   let alive=true;const unsubs:Array<()=>void>=[];
   const init=async()=>{
-   const s=await readSettings();if(alive)setSettings(s);
+   const s=await readSettings();
+   if(alive){speechEnabled.current=s.auto_speech;settingsRef.current=s;setSettings(s)}
    for(const [name,cb] of [
-    ['rino:candidate',(v:unknown)=>{setCandidate(v as CandidateSnapshot);setTranslation(null);setError('')}],
-    ['rino:translation',(v:unknown)=>{const t=v as Translation;setTranslation(t);setError('');if(s.auto_speech)speak(t.translated,t.target)}],
+    ['rino:candidate',(v:unknown)=>{setCandidate(v as CandidateSnapshot);setTranslation(null);latestTranslation.current=null;setError('')}],
+    ['rino:translation',(v:unknown)=>{const t=v as Translation;latestTranslation.current=t;setTranslation(t);setError('');if(speechEnabled.current)void speak(t.translated,t.target,settingsRef.current??undefined)}],
     ['rino:translation-error',(v:unknown)=>setError(String(v))],
-    ['rino:settings',(v:unknown)=>{setSettings(v as AppSettings);}],
-    ['rino:hide',()=>{setCandidate(null);setTranslation(null);setError('')}]
+    ['rino:settings',(v:unknown)=>{const next=v as AppSettings;const was=speechEnabled.current;speechEnabled.current=next.auto_speech;settingsRef.current=next;if(!next.auto_speech)stopSpeak();else if(!was&&latestTranslation.current)void speak(latestTranslation.current.translated,latestTranslation.current.target,next);setSettings(next)}],
+    ['rino:hide',()=>{setCandidate(null);setTranslation(null);latestTranslation.current=null;setError('')}]
    ] as Array<[string,(v:unknown)=>void]>){unsubs.push(await listenEvent(name,cb));}
    try{const snapshot=await call<CandidateSnapshot|null>('current_candidate');if(alive&&snapshot)setCandidate(snapshot)}catch{ /* preview */ }
   };init().catch(()=>{});
-  return()=>{alive=false;unsubs.forEach(u=>u())};
+  return()=>{alive=false;unsubs.forEach(u=>u());stopSpeak()};
  },[]);
  // Only the translation: the source already sits in the IME bar right above.
  const shown=translation?.translated??(error?'—':'…');
@@ -115,6 +122,31 @@ function IconButtons<T extends string>({items,value,onChange}:{items:Array<{id:T
 }
 function IconBtn({icon:Icon,title,onClick,className=''}:{icon:IconType;title:string;onClick:()=>void;className?:string}){
  return <button className={'icon-btn '+className} title={title} aria-label={title} onClick={onClick}><Icon size={15}/></button>
+}
+type ContextMenuItem={divider:true}|{divider?:false;label:string;icon?:IconType;onClick:()=>void;checked?:boolean;danger?:boolean;disabled?:boolean};
+function ContextMenu({x,y,items,scale,onClose}:{x:number;y:number;items:ContextMenuItem[];scale:number;onClose:()=>void}){
+ const ref=useRef<HTMLDivElement|null>(null);
+ useEffect(()=>{
+  const esc=(e:KeyboardEvent)=>{if(e.key==='Escape')onClose()};
+  window.addEventListener('keydown',esc);
+  requestAnimationFrame(()=>ref.current?.focus());
+  return()=>window.removeEventListener('keydown',esc);
+ },[onClose]);
+ return createPortal(
+  <div className="ctx-layer" onPointerDown={onClose} onContextMenu={e=>{e.preventDefault();onClose()}}>
+   <div ref={ref} className="ctx-menu" role="menu" tabIndex={-1}
+    style={{left:x,top:y,transform:`scale(${scale})`,maxHeight:Math.max(220,(window.innerHeight-16)/scale)}}
+    onPointerDown={e=>e.stopPropagation()}>
+    {items.map((item,i)=>{
+     if(item.divider)return <div className="ctx-sep" key={'sep-'+i}/>;
+     const Icon=item.icon;
+     return <button key={item.label+'-'+i} type="button" role="menuitem" aria-checked={item.checked} disabled={item.disabled}
+      className={'ctx-item'+(item.danger?' danger':'')} onClick={()=>{onClose();item.onClick()}}>
+      <span className="ctx-icon">{Icon&&<Icon size={14}/>}</span><span>{item.label}</span>{item.checked&&<Check size={13} className="ctx-check"/>}
+     </button>;
+    })}
+   </div>
+  </div>,document.body);
 }
 function Stat({icon:Icon,value,label,tone=''}:{icon:IconType;value:string|number;label:string;tone?:string}){
  return <div className={'metric '+tone} title={label}><span className="metric-icon"><Icon size={13}/></span><b>{value}</b></div>
@@ -212,6 +244,7 @@ function Application(){
  const [recOpen,setRecOpen]=useState(false);
  const [starredKeys,setStarredKeys]=useState<Set<string>>(()=>new Set());
  const [booted,setBooted]=useState(false);
+ const [ctx,setCtx]=useState<{x:number;y:number;items:ContextMenuItem[]}|null>(null);
  const toastHost=useRef<HTMLElement|null>(null);
  const savedRef=useRef<AppSettings|null>(null);
  const loadedRef=useRef(false);
@@ -229,12 +262,27 @@ function Application(){
   if(el?.show)el.show(text);
  },[]);
  const change=useCallback((patch:Partial<AppSettings>)=>setSettings(s=>s?{...s,...patch}:s),[]);
+ const setTts=useCallback((patch:Partial<AppSettings>)=>{
+  if(!settings)return;
+  const next={...settings,...patch};
+  setSettings(next);
+  void emitToHud('rino:settings',next).catch(()=>{});
+ },[settings]);
+ const setAutoSpeech=useCallback((value:boolean)=>setTts({auto_speech:value}),[setTts]);
  const patchProvider=useCallback((id:string,patch:Partial<ProviderProfile>)=>setSettings(s=>s?{...s,providers:s.providers.map(p=>p.id===id?{...p,...patch}:p)}:s),[]);
  const selectedProvider=settings?.providers.find(p=>p.id===providerSelected);
  const refreshHistory=useCallback(async()=>{if(DEMO_MODE){setHistoryRows(DEMO_HISTORY);return}try{setHistoryRows(await readHistory(800))}catch{/* preview */}},[]);
  const refreshVocab=useCallback(async()=>{if(DEMO_MODE){setVocabulary(DEMO_VOCAB);return}try{setVocabulary(await readVocab(dueOnly))}catch(e){tell(String(e))}},[dueOnly,tell]);
  const refreshStars=useCallback(async()=>{if(DEMO_MODE){setStarredKeys(new Set(DEMO_VOCAB.map(v=>v.source+'|'+v.target_lang)));return}try{const rows=await readVocab(false);setStarredKeys(new Set(rows.map(v=>v.source+'|'+v.target_lang)))}catch{/* preview */}},[]);
 
+ const copyText=useCallback(async(text:string,msg:string)=>{
+  try{await navigator.clipboard.writeText(text);tell(msg);return}catch{/* fall through */}
+  try{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();tell(msg)}catch{tell('复制失败')}
+ },[tell]);
+ const refreshStatus=useCallback(()=>{void readMetrics().then(setMetric).catch(()=>{});if(page==='history')void refreshHistory();if(page==='vocab')void refreshVocab()},[page,refreshHistory,refreshVocab]);
+ const removeHistoryRow=useCallback(async(h:HistoryRow)=>{try{await deleteHistory(h.id);await refreshHistory()}catch(e){tell(String(e))}},[refreshHistory,tell]);
+ const reviewVocabRow=useCallback(async(v:VocabRow)=>{try{await call('review_vocab',{text:v.source,target:v.target_lang,quality:4});await refreshVocab()}catch(e){tell(String(e))}},[refreshVocab,tell]);
+ const dropVocabRow=useCallback(async(v:VocabRow)=>{try{await call('remove_vocab',{text:v.source,target:v.target_lang});await refreshVocab();await refreshStars()}catch(e){tell(String(e))}},[refreshVocab,refreshStars,tell]);
  useEffect(()=>{
   let alive=true;const unsub:Array<()=>void>=[];
   const boot=async()=>{
@@ -311,6 +359,69 @@ function Application(){
  const loadModels=useCallback(async()=>{setModelError('');try{const list=await readModels();setModels(list)}catch(e){setModelError(String(e))}},[tell]);
  useEffect(()=>{if(page==='settings'&&settingsTab==='models'&&models.length===0&&inTauri()){readModels().then(setModels).catch(e=>setModelError(String(e)))}},[page,settingsTab,models.length]);
 
+ const openContextMenu=(e:React.MouseEvent<HTMLDivElement>)=>{
+  e.preventDefault();e.stopPropagation();
+  if(!settings)return;
+  const hit=e.target as HTMLElement;
+  const historyEl=hit.closest<HTMLElement>('[data-history-id]');
+  const vocabEl=hit.closest<HTMLElement>('[data-vocab-key]');
+  const h=historyEl?historyRows.find(r=>String(r.id)===historyEl.dataset.historyId):undefined;
+  const v=vocabEl?vocabulary.find(r=>r.source+'|'+r.target_lang===vocabEl.dataset.vocabKey):undefined;
+  const items:ContextMenuItem[]=[];
+  if(h){
+   items.push(
+    {label:'复制原文',icon:ClipboardCopy,onClick:()=>void copyText(h.original,'原文已复制')},
+    {label:'复制译文',icon:ClipboardCopy,onClick:()=>void copyText(h.translated,'译文已复制')},
+    {label:'朗读译文',icon:Volume2,onClick:()=>void speak(h.translated,h.target_lang,settings)},
+    {label:starredKeys.has(h.original+'|'+h.target_lang)?'取消收藏':'收藏到生词本',icon:Star,onClick:()=>void toggleStar(h)},
+    {label:'删除这条记录',icon:Trash2,danger:true,onClick:()=>void removeHistoryRow(h)},
+    {divider:true}
+   );
+  }else if(v){
+   items.push(
+    {label:'复制词汇',icon:ClipboardCopy,onClick:()=>void copyText(v.source,'词汇已复制')},
+    {label:'复制译文',icon:ClipboardCopy,onClick:()=>void copyText(v.translated,'译文已复制')},
+    {label:'朗读译文',icon:Volume2,onClick:()=>void speak(v.translated,v.target_lang,settings)},
+    {label:'标记已掌握',icon:Check,onClick:()=>void reviewVocabRow(v)},
+    {label:'移出生词本',icon:Trash2,danger:true,onClick:()=>void dropVocabRow(v)},
+    {divider:true}
+   );
+  }else{
+   if(translation){
+    const key=translation.original+'|'+translation.target;
+    items.push(
+     {label:'复制原文',icon:ClipboardCopy,onClick:()=>void copyText(translation.original,'原文已复制')},
+     {label:'复制译文',icon:ClipboardCopy,onClick:()=>void copyText(translation.translated,'译文已复制')},
+     {label:'朗读译文',icon:Volume2,onClick:()=>void speak(translation.translated,translation.target,settings)},
+     starredKeys.has(key)?{label:'已收藏到生词本',icon:Star,checked:true,disabled:true,onClick:()=>{}}
+      :{label:'收藏当前译文',icon:Star,onClick:()=>void saveTranslation(translation),
+        },
+     {divider:true}
+    );
+   }else if(live){
+    items.push(
+     {label:'复制当前输入',icon:ClipboardCopy,onClick:()=>void copyText(live.text,'输入已复制')},
+     {divider:true}
+    );
+   }
+  }
+  const common:ContextMenuItem[]=[
+   {label:'刷新状态',icon:RefreshCw,onClick:refreshStatus},
+   {label:settings.enabled?'暂停监测':'启动监测',icon:settings.enabled?Pause:Play,onClick:toggleMonitor},
+   {label:'自动朗读译文',icon:Volume2,checked:settings.auto_speech,onClick:()=>setAutoSpeech(!settings.auto_speech)},
+   {label:'夜间模式',icon:settings.dark?Sun:Moon,checked:settings.dark,onClick:()=>change({dark:!settings.dark})},
+  ];
+  items.push(...((h||v)?common:common.concat([
+   {label:'打开设置',icon:Settings2,onClick:()=>{setPage('settings');setSettingsTab('basic')}},
+   {label:'关于 RINO',icon:Info,onClick:()=>setPage('about')},
+   {label:'退出 RINO',icon:Power,danger:true,onClick:()=>void confirmClose('quit',false).catch(err=>tell(String(err)))}
+  ])));
+  const menuW=236*uiScale;
+  const estH=Math.min(420,items.reduce((n,it)=>n+(it.divider?9:34),18))*uiScale;
+  const x=Math.max(8,Math.min(e.clientX,window.innerWidth-menuW-8));
+  const y=Math.max(8,Math.min(e.clientY,window.innerHeight-estH-8));
+  setCtx({x,y,items});
+ };
  if(!settings) return <div className="boot"><Logo size={42}/><span>正在启动…</span></div>;
  if(!booted) return <div className="boot"><Logo size={42}/><span>正在启动…</span></div>;
 
@@ -321,7 +432,7 @@ function Application(){
  const closeMode=settings.close_prompt?'ask':(settings.close_action==='quit'?'quit':'tray');
  const fixedScroll=page==='history'||page==='vocab';
 
- return <div className="app" style={{width:`calc(100vw / ${uiScale})`,height:`calc(100vh / ${uiScale})`,transform:`scale(${uiScale})`,transformOrigin:"top left"}}>
+ return <div className="app" onContextMenu={openContextMenu} style={{width:`calc(100vw / ${uiScale})`,height:`calc(100vh / ${uiScale})`,transform:`scale(${uiScale})`,transformOrigin:"top left"}}>
   <aside className="rail">
    <div className="brand"><Logo size={32}/><div className="brand-copy"><strong>rino<span>.</span></strong><div className="brand-sub"><small>随字而译</small><em>v0.1.0</em></div></div></div>
    <nav className="nav">{NAV.map(([id,label,Icon])=><button key={id} className={page===id?'nav-item on':'nav-item'} onClick={()=>setPage(id)}>{page===id&&<motion.span className="nav-bg" layoutId="nav-bg" transition={{type:'spring',stiffness:430,damping:38}}/>}<Icon size={16}/><span>{label}</span>{page===id&&<ChevronRight size={13} className="nav-arrow"/>}</button>)}</nav>
@@ -350,7 +461,7 @@ function Application(){
     <motion.div key={page} className={'page page-'+page+(fixedScroll?' page-fill':'')} initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-5}} transition={{duration:.17,ease:[.22,1,.36,1]}}>
 
     {page==='home'&&<>
-     <PageHead title="随字而译" sub="输入之间，译文随候选轻盈呈现，让语言学习自然融入每一次表达。" right={<span className={settings.enabled?'status-pill on':'status-pill'}><i/>{settings.enabled?'监听中':'已暂停'}</span>}/>
+     <PageHead title="随字而译" sub="输入之间，译文轻盈呈现，让语言学习自然融入每一次表达。" right={<span className={settings.enabled?'status-pill on':'status-pill'}><i/>{settings.enabled?'监听中':'已暂停'}</span>}/>
      <div className="metrics">
       <Stat icon={Activity} value={metric.snapshots} label="候选识别次数"/>
       <Stat icon={Globe2} value={metric.translations} label="完成翻译次数"/>
@@ -371,7 +482,7 @@ function Application(){
        </div>
       </Panel>
       <Panel title="最近输入" right={<button className="link-btn" onClick={()=>setPage('history')}>全部 <ArrowRight size={12}/></button>}>
-       {historyRows.length?<div className="recent">{historyRows.slice(0,5).map(h=><div className="recent-row" key={h.id}><div className="recent-words"><strong>{h.original}</strong><ArrowRight size={11}/><em>{h.translated}</em></div><small>{clock(h.created_at)}</small></div>)}</div>:<Empty icon={History} title="还没有记录" text="开始输入后，这里会出现最近的字词与译文。"/>}
+       {historyRows.length?<div className="recent">{historyRows.slice(0,5).map(h=><div className="recent-row" key={h.id} data-history-id={h.id}><div className="recent-words"><strong>{h.original}</strong><ArrowRight size={11}/><em>{h.translated}</em></div><small>{clock(h.created_at)}</small></div>)}</div>:<Empty icon={History} title="还没有记录" text="开始输入后，这里会出现最近的字词与译文。"/>}
       </Panel>
      </div>
 
@@ -388,12 +499,12 @@ function Application(){
      <div className="history-body">
       {filteredHistory.length===0?<Panel className="fill-center"><Empty icon={History} title="没有匹配的记录" text="换一个关键词，或先去输入几个词。"/></Panel>
        :historyView==='cards'
-       ?<div className="cards">{pagedHistory.map((h,i)=><motion.div key={h.id} className="hcard" initial={{opacity:0,y:6}} animate={{opacity:1,y:0}} transition={{delay:Math.min(i,8)*.025,duration:.18}} whileHover={{y:-2}}>
+       ?<div className="cards">{pagedHistory.map((h,i)=><motion.div key={h.id} className="hcard" data-history-id={h.id} initial={{opacity:0,y:6}} animate={{opacity:1,y:0}} transition={{delay:Math.min(i,8)*.025,duration:.18}} whileHover={{y:-2}}>
          <div className="hcard-top"><span>{dir(h.source_lang,h.target_lang)}</span><small>{clock(h.created_at)}</small></div>
          <div className="hcard-body"><strong>{h.original}</strong><ArrowRight size={13}/><em>{h.translated}</em></div>
-         <div className="hcard-foot"><span>{h.engine} · {h.elapsed_ms} ms</span><div className="row-actions"><StarButton on={starredKeys.has(h.original+'|'+h.target_lang)} onClick={()=>void toggleStar(h)}/><IconBtn icon={Volume2} title="朗读" onClick={()=>speak(h.translated,h.target_lang)}/><IconBtn icon={Trash2} title="删除这条记录" onClick={async()=>{try{await deleteHistory(h.id);await refreshHistory()}catch(e){tell(String(e))}}}/></div></div>
+         <div className="hcard-foot"><span>{h.engine} · {h.elapsed_ms} ms</span><div className="row-actions"><StarButton on={starredKeys.has(h.original+'|'+h.target_lang)} onClick={()=>void toggleStar(h)}/><IconBtn icon={Volume2} title="朗读" onClick={()=>void speak(h.translated,h.target_lang,settings)}/><IconBtn icon={Trash2} title="删除这条记录" onClick={()=>void removeHistoryRow(h)}/></div></div>
         </motion.div>)}</div>
-       :<div className="table-wrap"><table><thead><tr><th>时间</th><th>原文</th><th>译文</th><th>引擎</th><th>耗时</th><th className="act">操作</th></tr></thead><tbody>{pagedHistory.map(h=><tr key={h.id}><td className="muted">{clock(h.created_at)}</td><td><strong>{h.original}</strong></td><td>{h.translated}</td><td className="muted">{h.engine}</td><td className="muted">{h.elapsed_ms} ms</td><td><div className="row-actions"><StarButton on={starredKeys.has(h.original+'|'+h.target_lang)} onClick={()=>void toggleStar(h)}/><IconBtn icon={Volume2} title="朗读" onClick={()=>speak(h.translated,h.target_lang)}/><IconBtn icon={Trash2} title="删除这条记录" onClick={async()=>{try{await deleteHistory(h.id);await refreshHistory()}catch(e){tell(String(e))}}}/></div></td></tr>)}</tbody></table></div>}
+       :<div className="table-wrap"><table><thead><tr><th>时间</th><th>原文</th><th>译文</th><th>引擎</th><th>耗时</th><th className="act">操作</th></tr></thead><tbody>{pagedHistory.map(h=><tr key={h.id} data-history-id={h.id}><td className="muted">{clock(h.created_at)}</td><td><strong>{h.original}</strong></td><td>{h.translated}</td><td className="muted">{h.engine}</td><td className="muted">{h.elapsed_ms} ms</td><td><div className="row-actions"><StarButton on={starredKeys.has(h.original+'|'+h.target_lang)} onClick={()=>void toggleStar(h)}/><IconBtn icon={Volume2} title="朗读" onClick={()=>void speak(h.translated,h.target_lang,settings)}/><IconBtn icon={Trash2} title="删除这条记录" onClick={()=>void removeHistoryRow(h)}/></div></td></tr>)}</tbody></table></div>}
      </div>
      <div className="pager"><span className="muted">共 {filteredHistory.length} 条</span><div className="pager-buttons"><IconBtn icon={ChevronLeft} title="上一页" onClick={()=>setPageIndex(Math.max(0,safeIndex-1))}/><span>第 {safeIndex+1} / {pageCount} 页</span><IconBtn icon={ChevronRight} title="下一页" onClick={()=>setPageIndex(Math.min(pageCount-1,safeIndex+1))}/></div></div>
     </>}
@@ -401,7 +512,7 @@ function Application(){
     {page==='vocab'&&<>
      <PageHead title="生词本" sub="收藏词语，科学复习。" right={<div className="head-tools"><Segmented items={[{id:'all',name:'全部'},{id:'due',name:'待复习'}]} value={dueOnly?'due':'all'} onChange={v=>setDueOnly(v==='due')}/><IconBtn icon={Download} title="导出 CSV" onClick={async()=>{try{const csv=await call<string>('export_vocab');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='rino-vocabulary.csv';a.click();URL.revokeObjectURL(url);}catch(e){tell(String(e))}}}/></div>}/>
      <div className="vocab-body">{vocabulary.length
-      ?<div className="table-wrap vocab-table"><table><thead><tr><th>词汇</th><th>译文</th><th>复习</th><th>下次</th><th className="act">操作</th></tr></thead><tbody>{vocabulary.map(v=><tr key={v.source+v.target_lang}><td><strong>{v.source}</strong><small className="muted"> {SHORT[v.target_lang]??v.target_lang}</small></td><td>{v.translated}</td><td className="muted">{v.repetitions} 次 · {v.interval_days} 天</td><td className="muted">{new Date(v.due_at).toLocaleDateString('zh-CN')}</td><td><div className="row-actions"><IconBtn icon={Volume2} title="朗读" onClick={()=>speak(v.translated,v.target_lang)}/><IconBtn icon={Check} title="标记已掌握" onClick={async()=>{try{await call('review_vocab',{text:v.source,target:v.target_lang,quality:4});await refreshVocab()}catch(e){tell(String(e))}}}/><IconBtn icon={Trash2} title="移出生词本" onClick={async()=>{try{await call('remove_vocab',{text:v.source,target:v.target_lang});await refreshVocab();await refreshStars()}catch(e){tell(String(e))}}}/></div></td></tr>)}</tbody></table></div>
+      ?<div className="table-wrap vocab-table"><table><thead><tr><th>词汇</th><th>译文</th><th>复习</th><th>下次</th><th className="act">操作</th></tr></thead><tbody>{vocabulary.map(v=><tr key={v.source+v.target_lang} data-vocab-key={v.source+'|'+v.target_lang}><td><strong>{v.source}</strong><small className="muted"> {SHORT[v.target_lang]??v.target_lang}</small></td><td>{v.translated}</td><td className="muted">{v.repetitions} 次 · {v.interval_days} 天</td><td className="muted">{new Date(v.due_at).toLocaleDateString('zh-CN')}</td><td><div className="row-actions"><IconBtn icon={Volume2} title="朗读" onClick={()=>void speak(v.translated,v.target_lang,settings)}/><IconBtn icon={Check} title="标记已掌握" onClick={()=>void reviewVocabRow(v)}/><IconBtn icon={Trash2} title="移出生词本" onClick={()=>void dropVocabRow(v)}/></div></td></tr>)}</tbody></table></div>
       :<Panel className="fill-center"><Empty icon={BookMarked} title="还没有收藏" text="在输入记录里点一下星标，词语就会出现在这里。"/></Panel>}</div>
     </>}
 
@@ -416,7 +527,30 @@ function Application(){
        <Panel title="浮窗">
         <Row label="字号"><select className="ctl" value={settings.font_size} onChange={e=>change({font_size:Number(e.target.value)})}>{[13,14,15,16,17,18,20,22,24].map(v=><option key={v} value={v}>{v} px</option>)}</select></Row>
         <Row label="与候选栏的距离" hint="0–50 px"><input className="ctl num" type="number" min={0} max={50} value={settings.hud_gap} onChange={e=>change({hud_gap:Number(e.target.value)})}/></Row>
-        <SwitchRow title="自动朗读译文" desc="使用系统语音" checked={settings.auto_speech} onChange={v=>change({auto_speech:v})}/>
+        <div className="field-note">浮窗显示译文时，按 Tab 可直接填入译文，不再上屏中文候选。</div>
+
+       </Panel>
+       <Panel title="语音">
+        <SwitchRow title="自动朗读译文" desc="译文出现时朗读，可随时关闭" checked={settings.auto_speech} onChange={v=>setAutoSpeech(v)}/>
+        <Row label="发音引擎">
+         <select className="ctl" value={settings.tts_provider} onChange={e=>{const v=e.target.value;setTts({tts_provider:v,tts_voice:v==='edge'?edgeVoiceFor(settings.target,settings.tts_voice):settings.tts_voice});if(v==='edge')tell('在线音色需开启授权后生效')}}>
+          <option value="system">本机语音</option>
+          <option value="edge">在线神经语音</option>
+         </select>
+        </Row>
+        {settings.tts_provider==='edge'?<>
+         <Row label="音色">
+          <select className="ctl voice-select" value={edgeVoiceFor(settings.target,settings.tts_voice)} onChange={e=>setTts({tts_voice:e.target.value})}>
+           {EDGE_VOICES.filter(v=>v.lang===settings.target).map(v=><option key={v.id} value={v.id}>{v.label}</option>)}
+          </select>
+         </Row>
+         {EDGE_VOICES.some(v=>v.lang===settings.target)
+          ?null
+          :<div className="field-note">当前目标语言暂无在线音色，仍使用本机语音。</div>}
+         <SwitchRow title="允许在线语音合成" desc="译文会发送给 Microsoft，仅用于生成语音" checked={settings.tts_cloud_consent} onChange={v=>{setTts({tts_cloud_consent:v});tell(v?'已允许在线语音合成':'已关闭在线语音合成')}}/>
+         {settings.tts_cloud_consent?null:<div className="field-note">未授权时自动回退本机语音。</div>}
+        </>:null}
+        <Row label="试听"><button className="ghost-btn" disabled={settings.tts_provider==='edge'&&!settings.tts_cloud_consent} onClick={()=>void speak(speakSample(settings.target),settings.target,settings)}>播放示例</button></Row>
        </Panel>
        <Panel title="外观">
         <div className="swatches">{THEMES.map(t=><button key={t.id} className={settings.theme===t.id?'swatch on':'swatch'} onClick={()=>change({theme:t.id})}><span style={{background:settings.dark?t.darkAccent:t.accent}}/>{t.name}</button>)}</div>
@@ -500,7 +634,7 @@ function Application(){
         <div className="about-logo"><Logo size={48}/></div>
         <div className="about-name"><div className="about-name-line"><h1>rino<span>.</span></h1><span className="about-version">v0.1.0</span></div><p>随字而译，输入自然流畅。</p></div>
        </div>
-       <p className="about-intro">实时识别微软拼音候选，译文随浮窗呈现。<br/>不干扰输入，不抢占焦点，数据仅留本机。</p>
+       <p className="about-intro">实时识别微软拼音候选，译文随浮窗呈现。<br/>不干扰输入，不抢占焦点；翻译默认本地，在线语音需单独授权。</p>
        <motion.div className="about-fx" aria-hidden="true" animate={{y:[0,-6,0]}} transition={{duration:5,repeat:Infinity,ease:"easeInOut"}}><span className="fx-key">nihao</span><span className="fx-arrow"><ArrowRight size={13}/></span><span className="fx-value">hello</span></motion.div>
        <div className="about-meta">
         <div className="meta-item"><Code2 size={15}/><strong>Jiezcode</strong></div>
@@ -518,7 +652,9 @@ function Application(){
 
   </div>
 
-  {createElement('sakuga-toast',{ref:toastHost,className:'sk-toast',duration:'2.6',style:{position:'fixed',left:'calc(50% - 118px)',bottom:'28px',zIndex:80,width:236,height:56}})}
+  {ctx&&<ContextMenu x={ctx.x} y={ctx.y} items={ctx.items} scale={uiScale} onClose={()=>setCtx(null)}/>}
+
+ {createElement('sakuga-toast',{ref:toastHost,className:'sk-toast',duration:'2.6',style:{position:'fixed',left:'calc(50% - 118px)',bottom:'28px',zIndex:80,width:236,height:56}})}
 
   <AnimatePresence>{recOpen&&<motion.div className="overlay" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={()=>setRecOpen(false)}>
    <motion.div className="modal rec-modal" initial={{opacity:0,scale:.96,y:8}} animate={{opacity:1,scale:1,y:0}} exit={{opacity:0,scale:.97,y:6}} transition={{type:'spring',stiffness:380,damping:32}} onClick={e=>e.stopPropagation()}>

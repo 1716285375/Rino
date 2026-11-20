@@ -94,6 +94,8 @@ h1,h2,h3,p{margin:0}
 .primary-btn{height:28px;padding:0 13px;border-radius:7px;background:linear-gradient(130deg,var(--accent),var(--accent-deep));color:#fff;font-size:11px;font-weight:700;box-shadow:0 4px 12px color-mix(in srgb,var(--accent) 25%,transparent)}
 .ghost-btn{height:28px;padding:0 11px;border-radius:7px;border:1px solid var(--line);background:var(--paper);font-size:11px;font-weight:600;color:var(--ink)}
 .ghost-btn:hover{background:var(--pale)}
+.ghost-btn:disabled{opacity:.45;cursor:default}
+.voice-select{width:168px;min-width:0;max-width:100%}
 .danger-btn{height:28px;padding:0 11px;border-radius:7px;background:color-mix(in srgb,var(--danger) 12%,var(--paper));border:1px solid color-mix(in srgb,var(--danger) 30%,var(--line));color:var(--danger);font-size:11px;font-weight:700}
 .link-btn{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:var(--accent-deep);padding:2px 4px;border-radius:5px}
 .link-btn:hover{background:var(--pale)}
@@ -261,6 +263,18 @@ th.act,td.act{text-align:right}
 .copyright{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted)}
 
 /* ---------- modal / toast ---------- */
+/* ---------- app context menu (replaces the WebView menu) ---------- */
+.ctx-layer{position:fixed;inset:0;z-index:96}
+.ctx-menu{position:fixed;width:236px;padding:6px;border:1px solid color-mix(in srgb,var(--line) 84%,var(--paper));border-radius:13px;background:color-mix(in srgb,var(--paper) 94%,var(--accent) 6%);box-shadow:0 18px 44px rgba(31,19,78,.18),0 2px 8px rgba(31,19,78,.08),var(--inset);transform-origin:top left;outline:none;overflow-y:auto;animation:ctxFade .12s ease-out}
+.ctx-item{display:flex;align-items:center;gap:9px;width:100%;height:31px;padding:0 8px;border-radius:8px;color:var(--ink);font-size:11.5px;font-weight:600;text-align:left;transition:background .12s,color .12s}
+.ctx-item:hover:not(:disabled){background:color-mix(in srgb,var(--accent) 12%,var(--paper))}
+.ctx-item:disabled{color:var(--muted);opacity:.62;cursor:default}
+.ctx-item.danger{color:var(--danger)}
+.ctx-icon{width:16px;display:grid;place-items:center;color:var(--muted);flex:none}
+.ctx-item.danger .ctx-icon{color:var(--danger)}
+.ctx-check{margin-left:auto;color:var(--accent-deep);flex:none}
+.ctx-sep{height:1px;margin:5px 6px;background:var(--line)}
+@keyframes ctxFade{from{opacity:0}to{opacity:1}}
 .overlay{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:rgba(12,8,28,.46);backdrop-filter:blur(3px);padding:20px}
 .modal{width:340px;background:var(--paper);border:1px solid var(--line);border-radius:15px;padding:16px;box-shadow:0 24px 60px rgba(18,10,48,.32)}
 .modal h3{font-size:14px;margin-bottom:5px}

@@ -41,7 +41,7 @@ impl LocalStore {
   let mut senses=Vec::<String>::new();
   if let Some(db)=&self.cedict {
     if let Ok(mut q)=db.lock().prepare("SELECT gloss FROM terms JOIN senses USING(entry_id) WHERE term=?1 ORDER BY entry_id,sense_order LIMIT 24"){
-     if let Ok(rows)=q.query_map(params![term],|r|r.get::<_,String>(0)){for g in rows.flatten(){for part in g.split([';','/']){clean_gloss(part,&mut senses);}}}
+     if let Ok(rows)=q.query_map(params![term],|r|r.get::<_,String>(0)){for g in rows.flatten(){let core=strip_gloss_notes(&g);for part in core.split([';','/']){clean_gloss(part,&mut senses);}}}
     }
   }
   if senses.len()<3 {
@@ -59,7 +59,7 @@ impl LocalStore {
  }
  pub fn list_vocab(&self,due_only:bool)->Result<Vec<VocabRow>>{
   let db=self.vocab.lock();let sql=if due_only {"SELECT source,target_lang,translated,repetitions,interval_days,due_at FROM vocabulary WHERE due_at<=?1 ORDER BY due_at"}else{"SELECT source,target_lang,translated,repetitions,interval_days,due_at FROM vocabulary WHERE (?1 IS NOT NULL) ORDER BY created_at DESC"};
-  let mut query=db.prepare(sql)?;let rows=query.query_map(params![Utc::now().to_rfc3339()],|r|Ok(VocabRow{source:r.get(0)?,target_lang:r.get(1)?,translated:r.get(2)?,repetitions:r.get(3)?,interval_days:r.get(4)?,due_at:r.get(5)?}))?;Ok(rows.collect::<rusqlite::Result<_>>()?)
+  let mut query=db.prepare(sql)?;let rows=query.query_map(params![Utc::now().to_rfc3339()],|r|Ok(VocabRow{source:r.get(0)?,target_lang:r.get(1)?,translated:crate::providers::tidy_translation(&r.get::<_,String>(2)?),repetitions:r.get(3)?,interval_days:r.get(4)?,due_at:r.get(5)?}))?;Ok(rows.collect::<rusqlite::Result<_>>()?)
  }
  pub fn review(&self,source:&str,lang:&str,quality:i32)->Result<()>{
   if !(0..=5).contains(&quality){anyhow::bail!("quality must be 0..5")}
@@ -83,7 +83,7 @@ impl LocalStore {
  pub fn list_history(&self,limit:u32)->Result<Vec<HistoryRow>> {
   let conn=self.vocab.lock();
   let mut stmt=conn.prepare("SELECT id,original,translated,source_lang,target_lang,engine,elapsed_ms,created_at FROM input_history ORDER BY id DESC LIMIT ?1")?;
-  let rows=stmt.query_map([limit.clamp(1,3000)],|r|Ok(HistoryRow{id:r.get(0)?,original:r.get(1)?,translated:r.get(2)?,source_lang:r.get(3)?,target_lang:r.get(4)?,engine:r.get(5)?,elapsed_ms:r.get::<_,i64>(6)? as u64,created_at:r.get(7)?}))?;
+  let rows=stmt.query_map([limit.clamp(1,3000)],|r|Ok(HistoryRow{id:r.get(0)?,original:r.get(1)?,translated:crate::providers::tidy_translation(&r.get::<_,String>(2)?),source_lang:r.get(3)?,target_lang:r.get(4)?,engine:r.get(5)?,elapsed_ms:r.get::<_,i64>(6)? as u64,created_at:r.get(7)?}))?;
   Ok(rows.filter_map(Result::ok).collect())
  }
  pub fn delete_history(&self,id:i64)->Result<()> { self.vocab.lock().execute("DELETE FROM input_history WHERE id=?1",params![id])?;Ok(()) }
@@ -92,11 +92,24 @@ impl LocalStore {
   let mut text="\u{feff}原文,目标语言,译文,复习次数,间隔天数,下次复习\r\n".to_owned();for x in self.list_vocab(false)?{text.push_str(&format!("{},{},{},{},{},{}\r\n",field(&x.source),field(&x.target_lang),field(&x.translated),x.repetitions,x.interval_days,field(&x.due_at)));}Ok(text)
  }
 }
+fn strip_gloss_notes(raw:&str)->String {
+ let mut out=String::new();let mut depth=0usize;
+ for ch in raw.chars() {
+  match ch {
+   '('|'（' => {depth+=1;if depth==1{out.push(' ');}},
+   ')'|'）' => {if depth>0{depth-=1;out.push(' ');}},
+   _ if depth==0 => out.push(ch),
+   _=>{}
+  }
+ }
+ out.split_whitespace().collect::<Vec<_>>().join(" ").trim_matches(|c:char| c==','||c==';'||c==':'||c==' ').to_owned()
+}
 fn clean_gloss(raw:&str,out:&mut Vec<String>) {
- let s=raw.trim().trim_matches(&['(',')',' '] as &[_]);let low=s.to_lowercase();
- if s.len()>45 || s.len()<1 ||s.chars().any(|c| ('\u{4e00}'..='\u{9fff}').contains(&c)) || ["variant of","old variant","see ","also written","surname ","cantonese","dialect","abbr. for","(cl:"].iter().any(|p|low.starts_with(p)){return;}
- let value=s.replace("  "," ");if !out.contains(&value){out.push(value)}
+ let s=strip_gloss_notes(raw);let low=s.to_lowercase();
+ if s.chars().count()>45 || s.is_empty() || s.chars().any(|c| ('\u{4e00}'..='\u{9fff}').contains(&c)) || ["variant of","old variant","see ","also written","surname ","cantonese","dialect","abbr. for","(cl:"].iter().any(|p|low.starts_with(p)){return;}
+ if !out.contains(&s){out.push(s)}
 }
 #[cfg(test)] mod tests{use super::*;
  #[test] fn basic_gloss_filter(){let mut r=vec![];clean_gloss("hello",&mut r);clean_gloss("variant of abc",&mut r);assert_eq!(r,["hello"]);}
+ #[test] fn gloss_notes_are_removed(){assert_eq!(strip_gloss_notes("a text (article, script, contract etc.)"),"a text");assert_eq!(strip_gloss_notes("(bound form) father"),"father");assert_eq!(strip_gloss_notes("module (in software"),"module");}
 }

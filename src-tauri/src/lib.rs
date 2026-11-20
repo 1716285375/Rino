@@ -14,6 +14,9 @@ use tauri::{Emitter, Manager, PhysicalPosition, State, WindowEvent};
 
 /// Candidate key of the frame currently on screen (read by the key hook).
 static HUD_KEY:Mutex<String>=Mutex::new(String::new());
+/// Translation for the current frame, paired with the target process id.
+/// Tab consumes it to replace the IME composition with the translation.
+static HUD_COMPLETION:Mutex<Option<(u32,String,String)>>=Mutex::new(None);
 /// Monitor thread handle, so a keystroke or click can cut the poll wait short.
 static LOOP_THREAD:std::sync::OnceLock<thread::Thread>=std::sync::OnceLock::new();
 
@@ -61,6 +64,8 @@ fn save_settings(settings: AppSettings, app: tauri::AppHandle, state: State<'_, 
         return Err("轮询间隔须在允许范围内".into());
     }
     if !(12..=28).contains(&settings.font_size) || settings.max_options > 12 { return Err("显示参数超出范围".into()); }
+    if settings.tts_provider != "system" && settings.tts_provider != "edge" { return Err("无效的语音引擎".into()); }
+    if settings.tts_voice.len() > 80 || settings.tts_voice.chars().any(|c| !c.is_ascii_alphanumeric() && c != '-' && c != '_') { return Err("无效的语音音色".into()); }
     if !settings.providers.iter().any(|p| p.id == settings.provider_id && p.enabled)
         && settings.provider_id != "auto" && settings.provider_id != "offline" { return Err("指定的 Provider 不可用".into()); }
     state.storage.save_settings(&settings).map_err(|e| e.to_string())?;
@@ -129,6 +134,30 @@ async fn translate_text(text:String, state:State<'_,Arc<RuntimeState>>) -> Resul
     let config=state.settings.read().clone();
     let (t,_) = state.engine.translate(&state.storage, &config, &text).await.map_err(|e|e.to_string())?;
     Ok(t)
+}
+#[tauri::command]
+async fn synthesize_speech(text:String, voice:String) -> Result<String,String> {
+    if text.trim().is_empty() {return Err("语音文本为空".into());}
+    if text.chars().count() > 800 {return Err("语音文本不能超过 800 字符".into());}
+    if voice.is_empty() || voice.len() > 80
+        || !voice.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_') {
+        return Err("无效的语音音色".into());
+    }
+    tokio::task::spawn_blocking(move || {
+        let config = msedge_tts::tts::SpeechConfig {
+            voice_name: voice,
+            audio_format: "audio-24khz-48kbitrate-mono-mp3".into(),
+            pitch: 0,
+            rate: 0,
+            volume: 0,
+        };
+        let mut client = msedge_tts::tts::client::connect()
+            .map_err(|e| format!("连接语音服务失败: {e}"))?;
+        let audio = client.synthesize(&text, &config)
+            .map_err(|e| format!("语音合成失败: {e}"))?;
+        use base64::Engine as _;
+        Ok(base64::engine::general_purpose::STANDARD.encode(audio.audio_bytes))
+    }).await.map_err(|e| format!("语音任务失败: {e}"))?
 }
 #[tauri::command]
 async fn list_ollama_models(state:State<'_, Arc<RuntimeState>>) -> Result<Vec<ModelRecord>,String> {
@@ -251,6 +280,7 @@ fn hud_resize(app:tauri::AppHandle,width:f64,height:f64,chars:u32,state:State<'_
 }
 fn hide_hud(app:&tauri::AppHandle) {
     keys::set_visible(false);
+    clear_hud_completion();
     *COMPOSITION_LETTERS.lock()=None;
     *LAST_BAR.lock()=None;
     *URGENT_UNTIL.lock()=None;
@@ -263,6 +293,19 @@ fn hide_hud(app:&tauri::AppHandle) {
 /// Key the pill is showing right now; the commit-key hook uses it as barrier.
 pub(crate) fn current_hud_key()->String {
     HUD_KEY.lock().clone()
+}
+fn clear_hud_completion() { *HUD_COMPLETION.lock()=None; }
+fn set_hud_completion(pid:u32,text:String,key:String) {
+    if text.trim().is_empty() { clear_hud_completion(); } else { *HUD_COMPLETION.lock()=Some((pid,text,key)); }
+}
+pub(crate) fn take_hud_completion()->Option<(u32,String)> {
+    let current=crate::current_hud_key();
+    let mut guard=HUD_COMPLETION.lock();
+    if guard.as_ref().map(|(_,_,key)| key!=&current).unwrap_or(false) {
+        *guard=None;
+        return None;
+    }
+    guard.take().map(|(pid,text,_)|(pid,text))
 }
 
 /// Hide path taken from the key hook: drop the frame, then hide the window.
@@ -333,7 +376,7 @@ fn monitor_loop(app:tauri::AppHandle, state:Arc<RuntimeState>) {
                 last_rect=sample.window_bounds;
                 last_cell=sample.bounds;
                 *state.snapshot.write()=Some(sample.clone());
-                *state.latest_translation.write()=None;
+                *state.latest_translation.write()=None;clear_hud_completion();
                 // Show already sized when we have seen this word before; a
                 // first-time word is sized by the HUD a couple of ms later.
                 if let Some(size)=HUD_SIZE_CACHE.lock().as_ref().and_then(|m|m.get(&sample.text)).copied() {
@@ -347,6 +390,7 @@ fn monitor_loop(app:tauri::AppHandle, state:Arc<RuntimeState>) {
                 let cloned_state=Arc::clone(&state);
                 let app2=app.clone();
                 let text=sample.text.clone();
+                let hud_key=sample.content_key();
                 // The loop below still needs cfg for its own timing; move a copy in.
                 let cfg_task=cfg.clone();
                 let task=tauri::async_runtime::spawn(async move {
@@ -364,14 +408,14 @@ fn monitor_loop(app:tauri::AppHandle, state:Arc<RuntimeState>) {
                                 *cloned_state.last_history.lock()=Some((history_key,Instant::now()));
                                 let _=cloned_state.storage.add_history(&translation.original,&translation.translated,&cfg.source,&cfg.target,&translation.engine,translation.elapsed_ms);
                             }
-                            *cloned_state.latest_translation.write()=Some(translation.clone());
+                            *cloned_state.latest_translation.write()=Some(translation.clone());if let Some(snapshot)=cloned_state.snapshot.read().as_ref(){set_hud_completion(snapshot.process_id,translation.translated.clone(),hud_key.clone());}
                             let _=app2.emit_to("hud","rino:translation",&translation);
                             let _=app2.emit_to("main","rino:translation",&translation);
                         },
                         Err(e)=>{
                             cloned_state.metrics.lock().errors+=1;
                             // Generic UI error only. Do not record raw candidate content.
-                            let _=app2.emit_to("hud","rino:translation-error",e.to_string());
+                            clear_hud_completion();let _=app2.emit_to("hud","rino:translation-error",e.to_string());
                         }
                     }
                 });
@@ -417,7 +461,7 @@ fn monitor_loop(app:tauri::AppHandle, state:Arc<RuntimeState>) {
             if let Some(task)=state.pending.lock().take(){task.abort();}
             previous_key.clear();
             *state.snapshot.write()=None;
-            *state.latest_translation.write()=None;
+            *state.latest_translation.write()=None;clear_hud_completion();
             hide_hud(&app);
         }
         state.metrics.lock().last_reader_status=reader.status();
@@ -568,6 +612,6 @@ pub fn run() {
             thread::Builder::new().name("rino-ime-uia".into()).spawn(move||monitor_loop(handle,state))?;
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![get_settings,save_settings,current_candidate,runtime_metrics,provider_stats,show_main,open_settings,confirm_close,list_history,delete_history,clear_history,set_api_key,has_api_key,translate_text,list_ollama_models,warmup_ollama_model,save_vocab,list_vocab,review_vocab,remove_vocab,export_vocab,diagnostic_report,hud_resize])
+        .invoke_handler(tauri::generate_handler![get_settings,save_settings,current_candidate,runtime_metrics,provider_stats,show_main,open_settings,confirm_close,list_history,delete_history,clear_history,set_api_key,has_api_key,translate_text,list_ollama_models,warmup_ollama_model,save_vocab,list_vocab,review_vocab,remove_vocab,export_vocab,diagnostic_report,hud_resize,synthesize_speech])
         .run(tauri::generate_context!()).expect("failed to run RINO");
 }

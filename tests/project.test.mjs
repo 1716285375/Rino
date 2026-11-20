@@ -51,3 +51,49 @@ test('RINO is single-instance on Windows',()=>{
  // The guard must be registered before setup creates windows, tray or threads.
  assert.ok(lib.indexOf('tauri_plugin_single_instance::init') < lib.indexOf('.setup('));
 });
+test('HUD speech follows live settings and stops when disabled',()=>{
+ const code=read('src/main.tsx');
+ assert.match(code,/const speechEnabled=useRef/);
+ assert.match(code,/speechEnabled\.current=s\.auto_speech/);
+ assert.match(code,/if\(!next\.auto_speech\)stopSpeak\(\)/);
+ assert.match(read('src/api.ts'),/export function stopSpeak/);
+ assert.match(code,/emitToHud\('rino:settings',next\)/);
+});
+test('custom context menu replaces the WebView menu and wires app actions',()=>{
+ const code=read('src/main.tsx');
+ assert.match(code,/onContextMenu=\{openContextMenu\}/);
+ assert.match(code,/className="ctx-menu"/);
+ for(const label of ['复制原文','朗读译文','打开设置','自动朗读译文','退出 RINO']) assert.ok(code.includes(label));
+});
+test('TTS keeps local voice as default and gates online neural voices',()=>{
+ const types=read('src/types.ts');
+ assert.match(types,/tts_provider:'system'/);
+ assert.match(types,/tts_cloud_consent:false/);
+ const voices=read('src/tts.ts');
+ assert.match(voices,/zh-CN-XiaoxiaoNeural/);
+ assert.match(voices,/ja-JP-NanamiNeural/);
+ const api=read('src/api.ts');
+ assert.match(api,/settings\?\.tts_provider==='edge'&&settings\.tts_cloud_consent/);
+ assert.match(api,/synthesize_speech/);
+ assert.match(api,/speechToken/);
+ assert.match(read('src-tauri/src/lib.rs'),/fn synthesize_speech/);
+ assert.match(read('src-tauri/src/domain.rs'),/tts_cloud_consent:false/);
+ const csp=JSON.parse(read('src-tauri/tauri.conf.json')).app.security.csp;
+ assert.match(csp,/media-src 'self' data: blob:/);
+});
+test('Tab completes the current translation instead of committing Chinese',()=>{
+ const keys=read('src-tauri/src/keys.rs');
+ assert.match(keys,/VK_TAB/);
+ assert.match(keys,/take_hud_completion/);
+ assert.match(keys,/inject_translation/);
+ assert.match(keys,/SendInput/);
+ const lib=read('src-tauri/src/lib.rs');
+ assert.match(lib,/set_hud_completion/);
+ assert.match(lib,/clear_hud_completion/);
+});
+test('translation output repairs truncated parenthetical notes',()=>{
+ const providers=read('src-tauri/src/providers.rs');
+ assert.match(providers,/repair_unbalanced_parentheses/);
+ assert.match(providers,/tidy_translation/);
+ assert.match(read('src-tauri/src/storage.rs'),/strip_gloss_notes/);
+});

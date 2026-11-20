@@ -48,7 +48,7 @@ pub struct AppSettings {
     pub source:String, pub target:String, pub provider_id:String, pub providers:Vec<ProviderProfile>,
     pub enabled:bool, pub show_candidate_row:bool, pub start_minimized:bool,
     pub poll_active_ms:u64, pub poll_idle_ms:u64, pub hud_gap:i32,
-    pub font_size:u32, pub auto_speech:bool, pub cloud_consent:bool,
+    pub font_size:u32, pub auto_speech:bool, pub tts_provider:String, pub tts_voice:String, pub tts_cloud_consent:bool, pub cloud_consent:bool,
     pub show_alternatives:bool, pub max_options:usize, pub enable_ime_diagnostics:bool,
     pub close_prompt:bool, pub close_action:String, pub theme:String, pub density:String, pub dark:bool,
 }
@@ -69,7 +69,7 @@ impl Default for AppSettings {
     ProviderProfile{id:"libre".into(),label:"LibreTranslate".into(),protocol:"libre".into(),base_url:"http://127.0.0.1:5000".into(),model:"".into(),app_id:None,enabled:false},
     ProviderProfile{id:"custom".into(),label:"自定义兼容 API".into(),protocol:"openai".into(),base_url:"".into(),model:"".into(),app_id:None,enabled:true}
    ],enabled:true,show_candidate_row:false,start_minimized:false,poll_active_ms:75,poll_idle_ms:240,
-   hud_gap:9,font_size:16,auto_speech:false,cloud_consent:false,
+   hud_gap:9,font_size:16,auto_speech:false,tts_provider:"system".into(),tts_voice:"".into(),tts_cloud_consent:false,cloud_consent:false,
    show_alternatives:true,max_options:4,enable_ime_diagnostics:false,
    close_prompt:true,close_action:"tray".into(),theme:"blossom".into(),density:"cozy".into(),dark:false}
  }

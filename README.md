@@ -1,6 +1,6 @@
 <h1 align="center">RINO</h1>
 
-<p align="center">RINO 读取微软拼音的当前候选，在输入法旁同步显示目标语言译文。输入不变，焦点不抢，译文只在你需要的时候出现。</p>
+<p align="center">RINO 读取微软拼音的当前候选，在输入法旁同步显示目标语言译文。默认不改动输入、不抢焦点；需要直接输入译文时，按 <code>Tab</code> 补全。</p>
 
 <p align="center">
   <a href="https://github.com/1716285375/Rino/releases"><img src="https://img.shields.io/badge/releases-Windows%20portable-6C4CF1?style=for-the-badge&logo=github&logoColor=white" alt="releases"></a>
@@ -27,6 +27,7 @@
 1. 打开 RINO，选择目标语言。
 2. 在编辑器、聊天框或搜索框里照常使用微软拼音。
 3. 候选出现时，浮窗在候选旁显示译文；上下键切换候选、回退、提交时，译文同步更新或立即收起。
+4. 想直接输入译文时按 `Tab`：浮窗收起，当前候选的译文会替换拼音上屏，不会先把中文候选打出来。
 
 
 
@@ -37,10 +38,12 @@
 ## 主要功能
 
 - **候选同步**：读取微软拼音的候选与当前选中项，译文跟着候选走。
+- **Tab 补全**：按 `Tab` 直接把当前译文填入输入框，适合边说边写、只想要目标语言的场景。
 - **贴近输入**：浮窗定位在候选附近，支持多显示器和不同缩放比例。
-- **本地优先**：输入记录、生词本和设置保存在本机；云端翻译默认关闭。
+- **本地优先**：输入记录、生词本和设置保存在本机；云端翻译默认关闭，在线语音需单独授权。
 - **模型可选**：Ollama、llama.cpp、DeepSeek、OpenAI、Anthropic、Gemini、OpenRouter 等。
 - **生词本**：从输入记录一键收藏，按间隔重复复习。
+- **语音朗读**：译文可自动朗读；默认本机语音，在线神经音色可选。
 - **轻量界面**：原生 Tauri 窗口，跟随系统主题，支持暗色模式。
 
 ## 下载
@@ -72,7 +75,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\build-windows.ps1
 
 ## 隐私
 
-候选文本只在需要翻译时离开本机；默认关闭云端翻译。API Key 保存在 Windows Credential Manager，不写入配置文件。输入记录和生词本仅存于本机。
+候选文本只在需要翻译时离开本机；默认关闭云端翻译。在线神经语音为可选项，开启并授权后才会把译文发送给 Microsoft 生成语音。API Key 保存在 Windows Credential Manager，不写入配置文件。输入记录和生词本仅存于本机。
 
 ## License
 
